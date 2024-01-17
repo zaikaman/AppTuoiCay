@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Image, Button, StyleSheet } from 'react-native';
+import { View, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import { Video } from 'expo-av';
 
 const stages = [
@@ -44,9 +44,9 @@ const Home = () => {
         style={styles.backgroundVideo}
       />
       <Image source={stages[treeStage]} style={{...styles.tree, width: treeSize, height: treeSize, top: treePosition}} resizeMode="contain" />
-      <View style={styles.buttonContainer}>
-        <Button title="Tưới cây" color="blue" onPress={waterTree} />
-      </View>
+      <TouchableOpacity style={styles.buttonContainer} onPress={waterTree}>
+        <Image source={require('../assets/images/water.png')} style={styles.waterImage} />
+      </TouchableOpacity>
     </View>
   );
 };
@@ -64,9 +64,19 @@ const styles = StyleSheet.create({
     position: 'absolute',
   },
   buttonContainer: {
+    width: 70,
+    height: 70,
+    borderRadius: 35,
+    backgroundColor: 'white',
+    justifyContent: 'center',
+    alignItems: 'center',
     position: 'absolute',
     right: 10,
     bottom: 10,
+  },
+  waterImage: {
+    width: 30,
+    height: 30,
   },
 });
 
