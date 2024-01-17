@@ -28,6 +28,7 @@ const Home = () => {
   const [treePosition, setTreePosition] = useState(positions[0]);
   const [totalWatered, setTotalWatered] = useState(0); // Tổng số tiền đã tưới
   const [fontLoaded, setFontLoaded] = useState(false);
+  const [remainingWaterTimes, setRemainingWaterTimes] = useState(100);
   const auth = getAuth();
 
   useEffect(() => {
@@ -35,6 +36,7 @@ const Home = () => {
       const userData = await getUserData(auth.currentUser.uid);
       setTreeStage(userData.treeStage);
       setTotalWatered(userData.totalWatered);
+      setRemainingWaterTimes(userData.remainingWaterTimes || 100);
     };
   
     fetchUserData();
@@ -59,6 +61,21 @@ const Home = () => {
     loadFont();
   }, []);
 
+  useEffect(() => {
+    const resetWaterTimes = async () => {
+      const today = new Date();
+      const lastResetDate = await getLastResetDate(auth.currentUser.uid); // Get the last reset date from the database
+  
+      if (!lastResetDate || today.getDate() !== lastResetDate.getDate()) {
+        // If the last reset date is not today, reset the remaining water times
+        setRemainingWaterTimes(100);
+        updateLastResetDate(auth.currentUser.uid, today); // Update the last reset date in the database
+      }
+    };
+  
+    resetWaterTimes();
+  }, []);
+
   const waterTree = () => {
     let waterAmount = treeStage === 0 ? 1 : 0.0001; // Số tiền tưới cho mỗi lần
     let newTotal = totalWatered + waterAmount;
@@ -73,6 +90,13 @@ const Home = () => {
       setTreePosition(positions[newTreeStage]);
   
       console.log('After watering, treeStage is: ', newTreeStage); // Log treeStage
+    }
+
+    if (remainingWaterTimes > 0) {
+      setRemainingWaterTimes(remainingWaterTimes - 1); // Decrease the remaining water times by 1
+      updateUserData(auth.currentUser.uid, {
+        remainingWaterTimes: remainingWaterTimes - 1, // Update the remaining water times in the database
+      });
     }
   };
 
@@ -100,11 +124,14 @@ const Home = () => {
         />
         {fontLoaded && <Text style={{...styles.moneyEarned, color: 'yellow'}}>💰 {(totalWatered || 0).toFixed(4)}</Text>}
       </View>
+      <View style={styles.remainingContainer}>
+        {fontLoaded && <Text style={{...styles.remainingText, color: 'yellow'}}>💧 {remainingWaterTimes}</Text>}
+      </View>
       <TouchableOpacity style={styles.buttonContainer} onPress={waterTree}>
         <Image source={require('../assets/images/water.png')} style={styles.waterImage} />
       </TouchableOpacity>
     </View>
-  );
+  );  
 };
 
 const styles = StyleSheet.create({
@@ -115,6 +142,15 @@ const styles = StyleSheet.create({
   },
   backgroundVideo: {
     ...StyleSheet.absoluteFillObject,
+  },
+  remainingContainer: {
+    position: 'absolute',
+    right: 10,
+    bottom: 90, // Adjust this value to position the remaining water times above the button
+  },
+  remainingText: {
+    fontFamily: 'AlegreyaSans-Black',
+    fontSize: 16,
   },
   tree: {
     position: 'absolute',
