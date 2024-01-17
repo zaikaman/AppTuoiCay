@@ -6,6 +6,7 @@ import * as Font from 'expo-font';
 import { getUserData, updateUserData } from '../utils/actions/userActions';
 import { getAuth } from 'firebase/auth';
 import { Audio } from 'expo-av';
+import { Modal } from 'react-native';
 
 const stages = [
   require('../assets/images/tree1.png'),
@@ -30,6 +31,7 @@ const Home = ({ navigation }) => {
   const [totalWatered, setTotalWatered] = useState(0);
   const [fontLoaded, setFontLoaded] = useState(false);
   const [remainingWaterTimes, setRemainingWaterTimes] = useState(10000);
+  const [modalVisible, setModalVisible] = useState(false);
   const auth = getAuth();
 
   useEffect(() => {
@@ -129,20 +131,6 @@ const Home = ({ navigation }) => {
     );
   };
 
-  const vipButtonAlert = () => {
-    Alert.alert(
-      "VIP Button",
-      "You have clicked the VIP button",
-      [
-        {
-          text: "OK",
-          onPress: () => console.log("OK Pressed"),
-          style: "cancel"
-        }
-      ]
-    );
-  };  
-
   const barWidth = Dimensions.get('screen').width - 30;
 
   return (
@@ -180,9 +168,53 @@ const Home = ({ navigation }) => {
       <TouchableOpacity style={styles.signOutButton} onPress={signOutAlert}>
         <Image source={require('../assets/images/back.png')} style={styles.signOutImage} />
       </TouchableOpacity>
-      <TouchableOpacity onPress={vipButtonAlert}>
-        <Image source={require('../assets/images/vip.png')} style={styles.vipButton} />
+      <TouchableOpacity style = {styles.menuButton} onPress={() => {setModalVisible(true)}}>
+        <Image source={require('../assets/images/menu.png')} style = {styles.waterImage} />
       </TouchableOpacity>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          setModalVisible(!modalVisible);
+        }}>
+        <View style={styles.modal}>
+        <TouchableOpacity
+        style = {
+          styles.closeModal
+        }
+              onPress={() => {
+                setModalVisible(false);
+              }}>
+              <Text style = {{
+                fontSize : 25,
+                marginLeft : 10,
+                marginTop : 3,
+              }}>x</Text>
+            </TouchableOpacity>
+          <View style={styles.modalContent}>
+    
+            <TouchableOpacity style={styles.modal_textContainer} onPress={() => {navigation.navigate('User'); setModalVisible(false)} }>
+              <Text style={styles.modal_text}>User</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.modal_textContainer} onPress={() => console.log('Setting')}>
+              <Text style={styles.modal_text}>Setting</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.modal_textContainer} onPress={() => console.log('Vip')}>
+              <Text style={styles.modal_text}>Vip</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.modal_textContainer} onPress={() => console.log('Shop')}>
+              <Text style={styles.modal_text}>Shop</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.modal_textContainer} onPress={() => console.log('LeaderBoard')}>
+              <Text style={styles.modal_text}>LeaderBoard</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -204,6 +236,7 @@ const styles = StyleSheet.create({
   remainingText: {
     fontFamily: 'AlegreyaSans-Black',
     fontSize: 16,
+    marginBottom : 30
   },
   tree: {
     position: 'absolute',
@@ -227,8 +260,19 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     position: 'absolute',
-    right: 10,
-    bottom: 10,
+    right: 20,
+    bottom: 40,
+  },
+  menuButton : {
+    width: 70,
+    height: 70,
+    borderRadius: 35,
+    backgroundColor: '#abb94d',
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'absolute',
+    left: 20,
+    bottom: 40,
   },
   waterImage: {
     width: 30,
@@ -248,13 +292,46 @@ const styles = StyleSheet.create({
   signOutImage: {
     width: 30,
     height: 30,
+  } ,
+  modal : {
+    positions : 'absolute',
+    top : 240, 
+    left : 70,
+    width : 250,
+    height : 340,
+    backgroundColor : 'white',
+    borderRadius : 10,
+    backgroundColor : '#98fb98',
   },
-  vipButton: {
-    width: 80, 
-    height: 80, 
-    top : -310,
-    right : -145
-  }  
+  modalContent : {
+    padding :20,
+    flex : 1,
+    justifyContent : 'center',
+    alignItems : 'center',
+    marginTop :20,
+  },
+  modal_textContainer : {
+    padding : 10,
+    justifyContent : 'space-between',
+    alignItems : 'center',
+    width : '100%',
+  },
+  closeModal : {
+    position : 'absolute',
+    top : 0,
+    right : 0,
+    backgroundColor : '#ff6347',
+    width : 35,
+    height : 40,
+    borderTopRightRadius : 10,
+  },
+  modal_text: {
+    height : 30,
+    fontFamily : 'AlegreyaSans-Black',
+    fontSize : 20
+  }
 });
 
-export default Home;
+
+      
+export default Home
