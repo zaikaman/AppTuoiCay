@@ -77,28 +77,28 @@ const Home = () => {
   }, []);
 
   const waterTree = () => {
-    let waterAmount = treeStage === 0 ? 1 : 0.0001; // Số tiền tưới cho mỗi lần
-    let newTotal = totalWatered + waterAmount;
-    setTotalWatered(newTotal);
-  
-    console.log('After watering, totalWatered is: ', newTotal); // Log totalWatered
-  
-    if (newTotal >= treeStage + 1 && treeStage < stages.length - 1) {
-      let newTreeStage = treeStage + 1;
-      setTreeStage(newTreeStage);
-      setTreeSize(sizes[newTreeStage]);
-      setTreePosition(positions[newTreeStage]);
-  
-      console.log('After watering, treeStage is: ', newTreeStage); // Log treeStage
-    }
-
     if (remainingWaterTimes > 0) {
+      let waterAmount = treeStage === 0 ? 1 : 0.0001; // Số tiền tưới cho mỗi lần
+      let newTotal = totalWatered + waterAmount;
+      setTotalWatered(newTotal);
+    
+      console.log('After watering, totalWatered is: ', newTotal); // Log totalWatered
+    
+      if (newTotal >= treeStage + 1 && treeStage < stages.length - 1) {
+        let newTreeStage = treeStage + 1;
+        setTreeStage(newTreeStage);
+        setTreeSize(sizes[newTreeStage]);
+        setTreePosition(positions[newTreeStage]);
+    
+        console.log('After watering, treeStage is: ', newTreeStage); // Log treeStage
+      }
+  
       setRemainingWaterTimes(remainingWaterTimes - 1); // Decrease the remaining water times by 1
       updateUserData(auth.currentUser.uid, {
         remainingWaterTimes: remainingWaterTimes - 1, // Update the remaining water times in the database
       });
     }
-  };
+  };  
 
   const barWidth = Dimensions.get('screen').width - 30;
 
