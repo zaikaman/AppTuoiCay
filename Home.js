@@ -197,20 +197,17 @@ const Home = ({ navigation }) => {
             <TouchableOpacity style={styles.modal_textContainer} onPress={() => {navigation.navigate('User'); setModalVisible(false)} }>
               <Text style={styles.modal_text}>User</Text>
             </TouchableOpacity>
-
-            <TouchableOpacity style={styles.modal_textContainer} onPress={() => console.log('Setting')}>
-              <Text style={styles.modal_text}>Setting</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.modal_textContainer} onPress={() => console.log('Vip')}>
+            <TouchableOpacity style={styles.modal_textContainer} onPress={() => {navigation.navigate('Vip'); setModalVisible(false)} }>
               <Text style={styles.modal_text}>Vip</Text>
             </TouchableOpacity>
-
-            <TouchableOpacity style={styles.modal_textContainer} onPress={() => console.log('Shop')}>
+            <TouchableOpacity style={styles.modal_textContainer} onPress={() => {navigation.navigate('Shop'); setModalVisible(false)} }>
               <Text style={styles.modal_text}>Shop</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.modal_textContainer} onPress={() => console.log('LeaderBoard')}>
+            <TouchableOpacity style={styles.modal_textContainer} onPress={() => {navigation.navigate('Leaderboard'); setModalVisible(false)} }>
               <Text style={styles.modal_text}>LeaderBoard</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.modal_textContainer} onPress={() => {navigation.navigate('Setting'); setModalVisible(false)} }>
+              <Text style={styles.modal_text}>Setting</Text>
             </TouchableOpacity>
           </View>
         </View>
