@@ -36,23 +36,6 @@ const Home = () => {
       setTreeStage(userData.treeStage);
       setTotalWatered(userData.totalWatered);
     };
-
-    fetchUserData();
-  }, []);
-
-  useEffect(() => {
-    updateUserData(auth.currentUser.uid, {
-      treeStage,
-      totalWatered,
-    });
-  }, [treeStage, totalWatered]);
-
-  useEffect(() => {
-    const fetchUserData = async () => {
-      const userData = await getUserData(auth.currentUser.uid);
-      setTreeStage(userData.treeStage);
-      setTotalWatered(userData.totalWatered);
-    };
   
     fetchUserData();
   }, []);
