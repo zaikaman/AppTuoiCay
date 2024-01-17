@@ -145,7 +145,7 @@ const styles = StyleSheet.create({
   },
   remainingContainer: {
     position: 'absolute',
-    right: 10,
+    right: 25,
     bottom: 90, // Adjust this value to position the remaining water times above the button
   },
   remainingText: {
