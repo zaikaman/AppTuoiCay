@@ -129,6 +129,20 @@ const Home = ({ navigation }) => {
     );
   };
 
+  const vipButtonAlert = () => {
+    Alert.alert(
+      "VIP Button",
+      "You have clicked the VIP button",
+      [
+        {
+          text: "OK",
+          onPress: () => console.log("OK Pressed"),
+          style: "cancel"
+        }
+      ]
+    );
+  };  
+
   const barWidth = Dimensions.get('screen').width - 30;
 
   return (
@@ -165,6 +179,9 @@ const Home = ({ navigation }) => {
       </TouchableOpacity>
       <TouchableOpacity style={styles.signOutButton} onPress={signOutAlert}>
         <Image source={require('../assets/images/back.png')} style={styles.signOutImage} />
+      </TouchableOpacity>
+      <TouchableOpacity onPress={vipButtonAlert}>
+        <Image source={require('../assets/images/vip.png')} style={styles.vipButton} />
       </TouchableOpacity>
     </View>
   );
@@ -231,6 +248,12 @@ const styles = StyleSheet.create({
   signOutImage: {
     width: 30,
     height: 30,
+  },
+  vipButton: {
+    width: 80, 
+    height: 80, 
+    top : -310,
+    right : -145
   }  
 });
 
