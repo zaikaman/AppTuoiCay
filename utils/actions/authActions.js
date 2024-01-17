@@ -72,25 +72,19 @@ export const signIn = (email, password) => {
     }
 }
 
-export const createUser = async (fullName, email, userId) => {
-    const db = getDatabase();
-    const userRef = ref(db, 'users/' + userId);
-    const snapshot = await get(userRef);
-    
-    if (snapshot.exists()) {
-      throw new Error('User already exists');
-    }
-    
+const createUser = async (fullName, email, userId) => {
     const userData = {
-      fullName,
-      email,
-      userId,
-      signUpDate: new Date().toISOString(),
-    };
-    
-    await set(userRef, userData);
-    return userData;
-  };
+        fullName,
+        email,
+        userId,
+        signUpDate: new Date().toISOString(),
+    }
+
+    const dbRef = ref(getDatabase())
+    const childRef = child(dbRef, `users/${userId}`)
+    await set(childRef, userData)
+    return userData
+}
 
 const saveToDataStorage = (token, userId, expiryDate) => {
     AsyncStorage.setItem(
@@ -102,3 +96,5 @@ const saveToDataStorage = (token, userId, expiryDate) => {
         })
     )
 }
+
+export { createUser, saveToDataStorage }
