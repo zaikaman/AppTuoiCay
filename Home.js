@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { View, Image, TouchableOpacity, StyleSheet, Dimensions, Text } from 'react-native';
+import { View, Image, TouchableOpacity, StyleSheet, Dimensions, Text, Alert } from 'react-native';
 import { Video } from 'expo-av';
 import ProgressBarAnimated from 'react-native-progress-bar-animated';
 import * as Font from 'expo-font';
 import { getUserData, updateUserData } from '../utils/actions/userActions';
-import { getAuth } from "firebase/auth";
+import { getAuth } from 'firebase/auth';
 import { Audio } from 'expo-av';
 
 const stages = [
@@ -20,14 +20,14 @@ const stages = [
   require('../assets/images/tree10.png'),
 ];
 
-const sizes = [100, 150, 200, 250, 300, 350, 400, 450, 500, 550]; // Kích thước tương ứng cho mỗi giai đoạn
-const positions = ['60%', '55%', '50%', '45%', '40%', '35%', '30%', '25%', '20%', '15%']; // Vị trí tương ứng cho mỗi giai đoạn
+const sizes = [100, 150, 200, 250, 300, 350, 400, 450, 500, 550];
+const positions = ['60%', '55%', '50%', '45%', '40%', '35%', '30%', '25%', '20%', '15%'];
 
-const Home = () => {
+const Home = ({ navigation }) => {
   const [treeStage, setTreeStage] = useState(0);
   const [treeSize, setTreeSize] = useState(sizes[0]);
   const [treePosition, setTreePosition] = useState(positions[0]);
-  const [totalWatered, setTotalWatered] = useState(0); // Tổng số tiền đã tưới
+  const [totalWatered, setTotalWatered] = useState(0);
   const [fontLoaded, setFontLoaded] = useState(false);
   const [remainingWaterTimes, setRemainingWaterTimes] = useState(10000);
   const auth = getAuth();
@@ -37,7 +37,7 @@ const Home = () => {
       const sound = new Audio.Sound();
       try {
         await sound.loadAsync(require('../assets/music/music.mp3'));
-        await sound.setIsLoopingAsync(true); 
+        await sound.setIsLoopingAsync(true);
         await sound.playAsync();
       } catch (error) {
         console.log(error);
@@ -45,6 +45,12 @@ const Home = () => {
     };
 
     playMusic();
+
+    return async () => {
+      // Clean up the audio when the component unmounts
+      const sound = new Audio.Sound();
+      await sound.unloadAsync();
+    };
   }, []);
 
   useEffect(() => {
@@ -56,18 +62,18 @@ const Home = () => {
       setTreeSize(userData.treeSize || sizes[0]);
       setTreePosition(userData.treePosition || positions[0]);
     };
-  
+
     fetchUserData();
   }, []);
-  
+
   useEffect(() => {
     updateUserData(auth.currentUser.uid, {
       treeStage,
       totalWatered,
       treeSize,
-      treePosition, // Update the tree position in the database
+      treePosition,
     });
-  }, [treeStage, totalWatered, treeSize, treePosition]); // Add treePosition to the dependency array
+  }, [treeStage, totalWatered, treeSize, treePosition]);
 
   useEffect(() => {
     async function loadFont() {
@@ -76,30 +82,52 @@ const Home = () => {
       });
       setFontLoaded(true);
     }
+
     loadFont();
+
+    return () => {
+      // Clean up the font when the component unmounts
+      Font.unloadAsync('AlegreyaSans-Black');
+    };
   }, []);
 
   const waterTree = () => {
     if (remainingWaterTimes > 0) {
-      let waterAmount = treeStage === 0 ? 1 : 0.1; // Số tiền tưới cho mỗi lần
+      let waterAmount = treeStage === 0 ? 1 : 0.1;
       let newTotal = totalWatered + waterAmount;
       setTotalWatered(newTotal);
-    
+
       if (newTotal >= treeStage + 1 && treeStage < stages.length - 1) {
         let newTreeStage = treeStage + 1;
         setTreeStage(newTreeStage);
-        let newSize = sizes[newTreeStage];
-        setTreeSize(newSize);
-        let newPosition = positions[newTreeStage];
-        setTreePosition(newPosition); // Set the new tree position
+        setTreeSize(sizes[newTreeStage]);
+        setTreePosition(positions[newTreeStage]);
       }
-  
-      setRemainingWaterTimes(remainingWaterTimes - 1); // Decrease the remaining water times by 1
+
+      setRemainingWaterTimes(remainingWaterTimes - 1);
       updateUserData(auth.currentUser.uid, {
-        remainingWaterTimes: remainingWaterTimes - 1, // Update the remaining water times in the database
+        remainingWaterTimes: remainingWaterTimes - 1,
       });
     }
-  };  
+  };
+
+  const signOutAlert = () => {
+    Alert.alert(
+      'Sign Out',
+      'Are you sure you want to sign out?',
+      [
+        {
+          text: 'No',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel',
+        },
+        {
+          text: 'Yes',
+          onPress: () => navigation.navigate('Login'),
+        },
+      ]
+    );
+  };
 
   const barWidth = Dimensions.get('screen').width - 30;
 
@@ -115,7 +143,11 @@ const Home = () => {
         isLooping
         style={styles.backgroundVideo}
       />
-      <Image source={stages[treeStage]} style={{...styles.tree, width: treeSize, height: treeSize, top: treePosition}} resizeMode="contain" />
+      <Image
+        source={stages[treeStage]}
+        style={{ ...styles.tree, width: treeSize, height: treeSize, top: treePosition }}
+        resizeMode="contain"
+      />
       <View style={styles.progressBarContainer}>
         <ProgressBarAnimated
           width={barWidth}
@@ -123,16 +155,19 @@ const Home = () => {
           backgroundColorOnComplete="#6CC644"
           useNativeDriver={false}
         />
-        {fontLoaded && <Text style={{...styles.moneyEarned, color: 'yellow'}}>💰 {(totalWatered || 0).toFixed(4)}</Text>}
+        {fontLoaded && <Text style={{ ...styles.moneyEarned, color: 'yellow' }}>💰 {(totalWatered || 0).toFixed(4)}</Text>}
       </View>
       <View style={styles.remainingContainer}>
-        {fontLoaded && <Text style={{...styles.remainingText, color: 'yellow'}}>💧 {remainingWaterTimes}</Text>}
+        {fontLoaded && <Text style={{ ...styles.remainingText, color: 'yellow' }}>💧 {remainingWaterTimes}</Text>}
       </View>
       <TouchableOpacity style={styles.buttonContainer} onPress={waterTree}>
         <Image source={require('../assets/images/water.png')} style={styles.waterImage} />
       </TouchableOpacity>
+      <TouchableOpacity style={styles.signOutButton} onPress={signOutAlert}>
+        <Image source={require('../assets/images/back.png')} style={styles.signOutImage} />
+      </TouchableOpacity>
     </View>
-  );  
+  );
 };
 
 const styles = StyleSheet.create({
@@ -147,7 +182,7 @@ const styles = StyleSheet.create({
   remainingContainer: {
     position: 'absolute',
     right: 25,
-    bottom: 90, // Adjust this value to position the remaining water times above the button
+    bottom: 90,
   },
   remainingText: {
     fontFamily: 'AlegreyaSans-Black',
@@ -158,7 +193,7 @@ const styles = StyleSheet.create({
   },
   progressBarContainer: {
     position: 'absolute',
-    top: 40, // Điều chỉnh giá trị này để di chuyển thanh tiến trình lên hoặc xuống
+    top: 40,
     alignItems: 'center',
   },
   moneyEarned: {
@@ -182,7 +217,21 @@ const styles = StyleSheet.create({
     width: 30,
     height: 30,
   },
+  signOutButton: {
+    width: 70,
+    height: 70,
+    borderRadius: 35,
+    backgroundColor: 'white',
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'absolute',
+    top: 60,
+    right: 290,
+  },
+  signOutImage: {
+    width: 30,
+    height: 30,
+  }  
 });
 
 export default Home;
-
