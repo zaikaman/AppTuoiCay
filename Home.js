@@ -3,6 +3,8 @@ import { View, Image, TouchableOpacity, StyleSheet, Dimensions, Text } from 'rea
 import { Video } from 'expo-av';
 import ProgressBarAnimated from 'react-native-progress-bar-animated';
 import * as Font from 'expo-font';
+import { getUserData, updateUserData } from '../utils/actions/userActions';
+import { getAuth } from "firebase/auth";
 
 const stages = [
   require('../assets/images/tree1.png'),
@@ -26,6 +28,43 @@ const Home = () => {
   const [treePosition, setTreePosition] = useState(positions[0]);
   const [totalWatered, setTotalWatered] = useState(0); // Tổng số tiền đã tưới
   const [fontLoaded, setFontLoaded] = useState(false);
+  const auth = getAuth();
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const userData = await getUserData(auth.currentUser.uid);
+      setTreeStage(userData.treeStage);
+      setTotalWatered(userData.totalWatered);
+    };
+
+    fetchUserData();
+  }, []);
+
+  useEffect(() => {
+    updateUserData(auth.currentUser.uid, {
+      treeStage,
+      totalWatered,
+    });
+  }, [treeStage, totalWatered]);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const userData = await getUserData(auth.currentUser.uid);
+      setTreeStage(userData.treeStage);
+      setTotalWatered(userData.totalWatered);
+    };
+  
+    fetchUserData();
+  }, []);
+  
+  useEffect(() => {
+    updateUserData(auth.currentUser.uid, {
+      treeStage,
+      totalWatered,
+    });
+    console.log('After update, treeStage is: ', treeStage); // Log treeStage
+    console.log('After update, totalWatered is: ', totalWatered); // Log totalWatered
+  }, [treeStage, totalWatered]);
 
   useEffect(() => {
     async function loadFont() {
@@ -41,11 +80,16 @@ const Home = () => {
     let waterAmount = treeStage === 0 ? 1 : 0.0001; // Số tiền tưới cho mỗi lần
     let newTotal = totalWatered + waterAmount;
     setTotalWatered(newTotal);
-
+  
+    console.log('After watering, totalWatered is: ', newTotal); // Log totalWatered
+  
     if (newTotal >= treeStage + 1 && treeStage < stages.length - 1) {
-      setTreeStage(treeStage + 1);
-      setTreeSize(sizes[treeStage + 1]);
-      setTreePosition(positions[treeStage + 1]);
+      let newTreeStage = treeStage + 1;
+      setTreeStage(newTreeStage);
+      setTreeSize(sizes[newTreeStage]);
+      setTreePosition(positions[newTreeStage]);
+  
+      console.log('After watering, treeStage is: ', newTreeStage); // Log treeStage
     }
   };
 
@@ -71,7 +115,7 @@ const Home = () => {
           backgroundColorOnComplete="#6CC644"
           useNativeDriver={false}
         />
-        {fontLoaded && <Text style={{...styles.moneyEarned, color: 'yellow'}}>💰 {totalWatered.toFixed(4)}</Text>}
+        {fontLoaded && <Text style={{...styles.moneyEarned, color: 'yellow'}}>💰 {(totalWatered || 0).toFixed(4)}</Text>}
       </View>
       <TouchableOpacity style={styles.buttonContainer} onPress={waterTree}>
         <Image source={require('../assets/images/water.png')} style={styles.waterImage} />
