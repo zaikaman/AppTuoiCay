@@ -53,6 +53,8 @@ const Home = () => {
       setTreeStage(userData.treeStage);
       setTotalWatered(userData.totalWatered);
       setRemainingWaterTimes(userData.remainingWaterTimes || 10000);
+      setTreeSize(userData.treeSize || sizes[0]);
+      setTreePosition(userData.treePosition || positions[0]);
     };
   
     fetchUserData();
@@ -62,10 +64,10 @@ const Home = () => {
     updateUserData(auth.currentUser.uid, {
       treeStage,
       totalWatered,
+      treeSize,
+      treePosition, // Update the tree position in the database
     });
-    console.log('After update, treeStage is: ', treeStage); // Log treeStage
-    console.log('After update, totalWatered is: ', totalWatered); // Log totalWatered
-  }, [treeStage, totalWatered]);
+  }, [treeStage, totalWatered, treeSize, treePosition]); // Add treePosition to the dependency array
 
   useEffect(() => {
     async function loadFont() {
@@ -79,19 +81,17 @@ const Home = () => {
 
   const waterTree = () => {
     if (remainingWaterTimes > 0) {
-      let waterAmount = treeStage === 0 ? 1 : 0.0001; // Số tiền tưới cho mỗi lần
+      let waterAmount = treeStage === 0 ? 1 : 0.1; // Số tiền tưới cho mỗi lần
       let newTotal = totalWatered + waterAmount;
       setTotalWatered(newTotal);
-    
-      console.log('After watering, totalWatered is: ', newTotal); // Log totalWatered
     
       if (newTotal >= treeStage + 1 && treeStage < stages.length - 1) {
         let newTreeStage = treeStage + 1;
         setTreeStage(newTreeStage);
-        setTreeSize(sizes[newTreeStage]);
-        setTreePosition(positions[newTreeStage]);
-    
-        console.log('After watering, treeStage is: ', newTreeStage); // Log treeStage
+        let newSize = sizes[newTreeStage];
+        setTreeSize(newSize);
+        let newPosition = positions[newTreeStage];
+        setTreePosition(newPosition); // Set the new tree position
       }
   
       setRemainingWaterTimes(remainingWaterTimes - 1); // Decrease the remaining water times by 1
@@ -185,3 +185,4 @@ const styles = StyleSheet.create({
 });
 
 export default Home;
+
