@@ -5,6 +5,7 @@ import ProgressBarAnimated from 'react-native-progress-bar-animated';
 import * as Font from 'expo-font';
 import { getUserData, updateUserData } from '../utils/actions/userActions';
 import { getAuth } from "firebase/auth";
+import { Audio } from 'expo-av';
 
 const stages = [
   require('../assets/images/tree1.png'),
@@ -28,15 +29,30 @@ const Home = () => {
   const [treePosition, setTreePosition] = useState(positions[0]);
   const [totalWatered, setTotalWatered] = useState(0); // Tổng số tiền đã tưới
   const [fontLoaded, setFontLoaded] = useState(false);
-  const [remainingWaterTimes, setRemainingWaterTimes] = useState(100);
+  const [remainingWaterTimes, setRemainingWaterTimes] = useState(10000);
   const auth = getAuth();
+
+  useEffect(() => {
+    const playMusic = async () => {
+      const sound = new Audio.Sound();
+      try {
+        await sound.loadAsync(require('../assets/music/music.mp3'));
+        await sound.setIsLoopingAsync(true); 
+        await sound.playAsync();
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    playMusic();
+  }, []);
 
   useEffect(() => {
     const fetchUserData = async () => {
       const userData = await getUserData(auth.currentUser.uid);
       setTreeStage(userData.treeStage);
       setTotalWatered(userData.totalWatered);
-      setRemainingWaterTimes(userData.remainingWaterTimes || 100);
+      setRemainingWaterTimes(userData.remainingWaterTimes || 10000);
     };
   
     fetchUserData();
@@ -59,21 +75,6 @@ const Home = () => {
       setFontLoaded(true);
     }
     loadFont();
-  }, []);
-
-  useEffect(() => {
-    const resetWaterTimes = async () => {
-      const today = new Date();
-      const lastResetDate = await getLastResetDate(auth.currentUser.uid); // Get the last reset date from the database
-  
-      if (!lastResetDate || today.getDate() !== lastResetDate.getDate()) {
-        // If the last reset date is not today, reset the remaining water times
-        setRemainingWaterTimes(100);
-        updateLastResetDate(auth.currentUser.uid, today); // Update the last reset date in the database
-      }
-    };
-  
-    resetWaterTimes();
   }, []);
 
   const waterTree = () => {
