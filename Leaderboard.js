@@ -1,86 +1,67 @@
-// Leaderboard.js
-import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList } from 'react-native';
+import React, { Component } from 'react';
+import { View, Alert, Text } from 'react-native';
+import Leaderboard from 'react-native-leaderboard';
+import { getFirebaseApp } from '../utils/firebaseHelper';
+import { getDatabase, ref, onValue } from 'firebase/database';
+import { getUserData } from '../utils/actions/userActions';
 
-let database = [];
-
-function generateRandomUsername() {
-  const words = ["Nguyễn", "Trần", "Lê", "Phạm", "Hoàng", "Huỳnh", "Phan", "Vũ", "Võ", "Đặng", "Bùi", "Đỗ", "Hồ", "Ngô", "Dương", "Lý"];
-  let name = '';
-  for (let i = 0; i < Math.floor(Math.random() * 3) + 3; i++) {
-    name += words[Math.floor(Math.random() * words.length)] + ' ';
-  }
-  return name.trim();
-}
-
-function generateRandomScore() {
-  return Math.floor(Math.random() * 1000);
-}
-
-function initializeLeaderboard() {
-  for (let i = 0; i < 1000; i++) {
-    database.push({
-      username: generateRandomUsername(),
-      score: generateRandomScore(),
-    });
-  }
-  database.sort((a, b) => b.score - a.score);
-}
-
-const Leaderboard = () => {
-  const [leaderboard, setLeaderboard] = useState([]);
-
-  useEffect(() => {
-    initializeLeaderboard();
-    setLeaderboard(database);
-
-    // Set up the daily update at 00:00 Vietnamese time
-    const now = new Date();
-    const midnightVN = new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate() + 1, // Next day
-      0, // 00 hours
-      0, // 00 minutes
-      0 // 00 seconds
-    ).getTime();
-
-    const timeUntilMidnight = midnightVN - now.getTime();
-    setTimeout(() => {
-      updateLeaderboard();
-      setInterval(() => {
-        updateLeaderboard();
-      }, 24 * 60 * 60 * 1000); // Update every 24 hours
-    }, timeUntilMidnight);
-
-  }, []);
-
-  const updateLeaderboard = () => {
-    // Generate new scores for each user
-    for (let i = 0; i < database.length; i++) {
-      database[i].score += Math.floor(Math.random() * 1000);
-    }
-    
-    // Sort the leaderboard by score in descending order
-    database.sort((a, b) => b.score - a.score);
-
-    // Update the state to trigger a re-render
-    setLeaderboard([...database]);
+export default class AvatarAndClickable extends Component {
+  state = {
+    data: []
   };
 
-  return (
-    <View>
-      <FlatList
-        data={leaderboard}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={({ item, index }) => (
-          <View>
-            <Text>{`#${index + 1} ${item.username}: ${item.score}`}</Text>
-          </View>
-        )}
-      />
-    </View>
-  );
-};
+  componentDidMount() {
+    const app = getFirebaseApp();
+    const db = getDatabase(app);
+    const usersRef = ref(db, 'users');
 
-export default Leaderboard;
+    onValue(usersRef, (snapshot) => {
+        const users = snapshot.val();
+        const data = [];
+        for(let id in users) {
+          data.push({
+            name: users[id].fullName,
+            score: parseFloat(users[id].totalWatered).toFixed(4), // Làm tròn totalWatered
+            iconUrl: users[id].iconUrl
+          });
+        }
+        this.setState({ data });
+      });
+  }
+
+  alert = (title, body) => {
+    Alert.alert(title, body, [{ text: 'OK', onPress: () => {} }], {
+      cancelable: false
+    });
+  };
+
+  render() {
+    const props = {
+      labelBy: 'name',
+      sortBy: 'score',
+      data: this.state.data,
+      icon: 'iconUrl',
+      onRowPress: (item, index) => {
+        this.alert(item.name + ' clicked', item.score + ' points, wow!');
+      },
+      evenRowColor: '#edfcf9'
+    };
+
+    return (
+      <View style={{ flex: 1 }}>
+        <View
+          style={{
+            paddingTop: 50,
+            backgroundColor: 'black',
+            alignItems: 'center'
+          }}
+        >
+          <Text style={{ fontSize: 30, color: 'white', paddingBottom: 10 }}>
+            Leaderboard
+          </Text>
+        </View>
+        <Leaderboard {...props} />
+      </View>
+    );
+  }
+}
