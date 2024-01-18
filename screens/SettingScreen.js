@@ -1,9 +1,18 @@
+// Settings.js
 import React, { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import Slider from '@react-native-community/slider';
+import sound from './sound'; // Đảm bảo rằng bạn đã tạo file này
 
 const Settings = () => {
-  const [volume, setVolume] = useState(0.5); // Initial volume is 0.5
+  const [volume, setVolume] = useState(1); // Initial volume is 0.5
+
+  const handleValueChange = async (value) => {
+    setVolume(value);
+    if (sound._loaded) { // chỉ thay đổi âm lượng nếu âm thanh đã được tải
+      await sound.setVolumeAsync(value);
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -17,7 +26,7 @@ const Settings = () => {
           minimumValue={0}
           maximumValue={1}
           value={volume}
-          onValueChange={setVolume}
+          onValueChange={handleValueChange} // sử dụng handleValueChange
           minimumTrackTintColor="#FFFFFF"
           maximumTrackTintColor="#000000"
         />
