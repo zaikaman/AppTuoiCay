@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { View, Image, TouchableOpacity, StyleSheet, Dimensions, Text, Alert } from 'react-native';
 import { Video } from 'expo-av';
@@ -7,7 +8,6 @@ import { getUserData, updateUserData } from '../utils/actions/userActions';
 import { getAuth } from 'firebase/auth';
 import { Audio } from 'expo-av';
 import { Modal } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 
 const stages = [
   require('../assets/images/tree1.png'),
@@ -25,7 +25,22 @@ const stages = [
 const sizes = [100, 150, 200, 250, 300, 350, 400, 450, 500, 550];
 const positions = ['60%', '55%', '50%', '45%', '40%', '35%', '30%', '25%', '20%', '15%'];
 
-const Home = ({}) => {
+// Get the screen dimensions
+const screenWidth = Dimensions.get('window').width;
+const screenHeight = Dimensions.get('window').height;
+
+// Calculate the position of the buttons
+const signOutButtonPosition = {
+  top: screenHeight * 0.08, // 1% from the top of the screen
+  left: screenWidth * 0.78, // 1% from the left of the screen
+};
+
+const vipButtonPosition = {
+  top: screenHeight * 0.22, // 20% from the top of the screen
+  right: screenWidth * 0.247, // 10% from the right of the screen
+};
+
+const Home = ({ navigation }) => {
   const [treeStage, setTreeStage] = useState(0);
   const [treeSize, setTreeSize] = useState(sizes[0]);
   const [treePosition, setTreePosition] = useState(positions[0]);
@@ -134,10 +149,18 @@ const Home = ({}) => {
 
   const barWidth = Dimensions.get('screen').width - 30;
 
-  const navigation = useNavigation();
-
-  const goToLeaderboard = () => {
-    navigation.navigate('Leaderboard');
+  const vipButtonAlert = () => {
+    Alert.alert(
+      "VIP Button",
+      "You have clicked the VIP button",
+      [
+        {
+          text: "OK",
+          onPress: () => console.log("OK Pressed"),
+          style: "cancel"
+        }
+      ]
+    );
   };
 
   return (
@@ -157,7 +180,6 @@ const Home = ({}) => {
         style={{ ...styles.tree, width: treeSize, height: treeSize, top: treePosition }}
         resizeMode="contain"
       />
-      
       <View style={styles.progressBarContainer}>
         <ProgressBarAnimated
           width={barWidth}
@@ -178,10 +200,10 @@ const Home = ({}) => {
       </TouchableOpacity>
       <TouchableOpacity style = {styles.menuButton} onPress={() => {setModalVisible(true)}}>
         <Image source={require('../assets/images/menu.png')} style = {styles.waterImage} />
-      </TouchableOpacity>     
-  
-
-
+      </TouchableOpacity>
+      <TouchableOpacity onPress={vipButtonAlert}>
+        <Image source={require('../assets/images/vip.png')} style={styles.vipButton} />
+      </TouchableOpacity>
       <Modal
         animationType="slide"
         transparent={true}
@@ -214,19 +236,19 @@ const Home = ({}) => {
             <TouchableOpacity style={styles.modal_textContainer} onPress={() => {navigation.navigate('Shop'); setModalVisible(false)} }>
               <Text style={styles.modal_text}>Shop</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.modal_textContainer} onPress={() => {navigation.navigate('Setting'); setModalVisible(false)} }>
+            <TouchableOpacity style={styles.modal_textContainer} onPress={() => {navigation.navigate('Leaderboard'); setModalVisible(false)} }>
+              <Text style={styles.modal_text}>LeaderBoard</Text>
+            </TouchableOpacity>
+            <TouchableOpacity 
+              style={styles.modal_textContainer} 
+              onPress={() => {navigation.navigate('Setting'); setModalVisible(false)} }
+            >
               <Text style={styles.modal_text}>Setting</Text>
             </TouchableOpacity>
           </View>
         </View>
       </Modal>
-
-      <TouchableOpacity style={styles.bxhButton} onPress={goToLeaderboard}>
-        <Text style={styles.bxhButtonText}>BXH</Text>
-      </TouchableOpacity>
-
     </View>
-    
   );
 };
 
@@ -274,6 +296,15 @@ const styles = StyleSheet.create({
     right: 20,
     bottom: 40,
   },
+  vipButton: {
+    width: 80, 
+    height: 80, 
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'absolute',
+    top: vipButtonPosition.top,
+    right: vipButtonPosition.right,
+  },
   menuButton : {
     width: 70,
     height: 70,
@@ -297,8 +328,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     position: 'absolute',
-    top: 60,
-    right: 290,
+    top: signOutButtonPosition.top,
+    right: signOutButtonPosition.left,
   },
   signOutImage: {
     width: 30,
@@ -340,23 +371,7 @@ const styles = StyleSheet.create({
     height : 30,
     fontFamily : 'AlegreyaSans-Black',
     fontSize : 20
-  },
-  bxhButton: {
-    position: 'absolute',    
-    bottom: 120,
-    left: 10,
-    backgroundColor: '#abb94d',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 5,
-  },
-  bxhButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
+  }
 });
 
-
-      
-export default Home
+export default Home;
