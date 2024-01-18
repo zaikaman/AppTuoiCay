@@ -8,6 +8,7 @@ import { getUserData, updateUserData } from '../utils/actions/userActions';
 import { getAuth } from 'firebase/auth';
 import { Audio } from 'expo-av';
 import { Modal } from 'react-native';
+import sound from './sound';
 
 const stages = [
   require('../assets/images/tree1.png'),
@@ -51,8 +52,6 @@ const Home = ({ navigation }) => {
   const [isMusicPlaying, setIsMusicPlaying] = useState(false);
   const auth = getAuth();
 
-  const sound = new Audio.Sound();
-
   useEffect(() => {
     const playMusic = async () => {
       try {
@@ -67,7 +66,6 @@ const Home = ({ navigation }) => {
     playMusic();
 
     return async () => {
-      // Clean up the audio when the component unmounts
       await sound.unloadAsync();
     };
   }, []);
