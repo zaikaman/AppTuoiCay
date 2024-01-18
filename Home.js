@@ -48,11 +48,13 @@ const Home = ({ navigation }) => {
   const [fontLoaded, setFontLoaded] = useState(false);
   const [remainingWaterTimes, setRemainingWaterTimes] = useState(10000);
   const [modalVisible, setModalVisible] = useState(false);
+  const [isMusicPlaying, setIsMusicPlaying] = useState(false);
   const auth = getAuth();
+
+  const sound = new Audio.Sound();
 
   useEffect(() => {
     const playMusic = async () => {
-      const sound = new Audio.Sound();
       try {
         await sound.loadAsync(require('../assets/music/music.mp3'));
         await sound.setIsLoopingAsync(true);
@@ -66,7 +68,6 @@ const Home = ({ navigation }) => {
 
     return async () => {
       // Clean up the audio when the component unmounts
-      const sound = new Audio.Sound();
       await sound.unloadAsync();
     };
   }, []);
@@ -228,7 +229,7 @@ const Home = ({ navigation }) => {
           <View style={styles.modalContent}>
     
             <TouchableOpacity style={styles.modal_textContainer} onPress={() => {navigation.navigate('User'); setModalVisible(false)} }>
-              <Text style={styles.modal_text}>User</Text>
+              <Text style={styles.modal_text}>Your Profile</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.modal_textContainer} onPress={() => {navigation.navigate('Vip'); setModalVisible(false)} }>
               <Text style={styles.modal_text}>Vip</Text>
@@ -243,7 +244,7 @@ const Home = ({ navigation }) => {
               style={styles.modal_textContainer} 
               onPress={() => {navigation.navigate('Setting'); setModalVisible(false)} }
             >
-              <Text style={styles.modal_text}>Setting</Text>
+              <Text style={styles.modal_text}>Settings</Text>
             </TouchableOpacity>
           </View>
         </View>
