@@ -211,9 +211,9 @@ const Home = ({ navigation }) => {
           setModalVisible(!modalVisible);
         }}
       >
-        <View style={[styles.modal, { backgroundColor: '#abb94d', height: '48%' }]}>
+        <View style={[styles.modal, { backgroundColor: '#abb94d', height: '55%' }]}>
           <View style={{ height: 1 }} />
-          <Text style={{ textAlign: 'center', marginTop: 20, ...styles.modal_text }}>Menu</Text>
+          <Text style={{ textAlign: 'center', marginTop: 20, fontSize: 3, ...styles.modal_text }}>Menu</Text>
           <TouchableOpacity
             style={styles.closeModal}
             onPress={() => {
@@ -234,7 +234,7 @@ const Home = ({ navigation }) => {
                 source={require('C:/Users/ADMIN/Downloads/Money Tree/Money Tree/assets/images/profile.png')}
                 style={{ width: 40, height: 40, marginRight: 10 }}
               />
-              <Text style={[styles.modal_text, { marginRight: 22, marginTop: 10 }]}>Your Profile</Text>
+              <Text style={[styles.modal_text, { marginRight: 22, marginTop: 1 }]}>Your Profile</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.modal_textContainer, { borderWidth: 1, borderColor: 'black', flexDirection: 'row', alignItems: 'center' }]}
@@ -247,7 +247,7 @@ const Home = ({ navigation }) => {
                 source={require('C:/Users/ADMIN/Downloads/Money Tree/Money Tree/assets/images/vip.png')}
                 style={{ width: 40, height: 40, marginRight: 10 }}
               />
-              <Text style={[styles.modal_text, { marginRight: 56, marginTop: 10 }]}>VIP</Text>
+              <Text style={[styles.modal_text, { marginRight: 56, marginTop: 1 }]}>VIP</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.modal_textContainer, { borderWidth: 1, borderColor: 'black', flexDirection: 'row', alignItems: 'center' }]}
@@ -260,7 +260,7 @@ const Home = ({ navigation }) => {
                 source={require('C:/Users/ADMIN/Downloads/Money Tree/Money Tree/assets/images/shop.png')}
                 style={{ width: 40, height: 40, marginRight: 10 }}
               />
-              <Text style={[styles.modal_text, { marginRight: 52, marginTop: 10 }]}>Shop</Text>
+              <Text style={[styles.modal_text, { marginRight: 52, marginTop: 1 }]}>Shop</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.modal_textContainer, { borderWidth: 1, borderColor: 'black', flexDirection: 'row', alignItems: 'center' }]}
@@ -273,7 +273,7 @@ const Home = ({ navigation }) => {
                 source={require('C:/Users/ADMIN/Downloads/Money Tree/Money Tree/assets/images/leaderboard.png')}
                 style={{ width: 40, height: 40, marginRight: 10 }}
               />
-              <Text style={[styles.modal_text, { marginRight: 20, marginTop: 10 }]}>Leaderboard</Text>
+              <Text style={[styles.modal_text, { marginRight: 20, marginTop: 1 }]}>Leaderboard</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.modal_textContainer, { borderWidth: 1, borderColor: 'black', flexDirection: 'row', alignItems: 'center' }]}
@@ -286,7 +286,7 @@ const Home = ({ navigation }) => {
                 source={require('C:/Users/ADMIN/Downloads/Money Tree/Money Tree/assets/images/settings.png')}
                 style={{ width: 40, height: 40, marginRight: 10 }}
               />
-              <Text style={[styles.modal_text, { marginRight: 40, marginTop: 10 }]}>Settings</Text>
+              <Text style={[styles.modal_text, { marginRight: 40, marginTop: 1 }]}>Settings</Text>
             </TouchableOpacity>
           </View>
         </View>
