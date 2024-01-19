@@ -109,7 +109,8 @@ const EditProfile = ({ navigation }) => {
     setSelectedImageIndex(index);
     const selectedImage = profileImages[index];
     setSelectedImage(selectedImage);
-  };
+    setImage(null); 
+  };  
 
   const [image, setImage] = useState(null)
   const handlePickImage = async ()=>{
