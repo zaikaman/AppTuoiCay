@@ -17,6 +17,7 @@ import { getAuth } from "firebase/auth";
 import { getStorage } from "firebase/storage";
 import { ref as sRef, put } from "firebase/storage";
 import DatePicker, { getFormatedDate } from "react-native-modern-datepicker";
+import * as ImagePicker from 'expo-image-picker';
 
 const profileImages = [
   require("../assets/images/image1.png"),
@@ -53,6 +54,9 @@ const EditProfile = ({ navigation }) => {
         setSelectedImageIndex(data.profilePictureIndex);
         setSelectedImage(profileImages[data.profilePictureIndex]);
       }
+      if(data.profilePictureFromUser !== undefined) {
+        setImage(data.profilePictureFromUser)
+      }
     });
   }, []);
 
@@ -69,6 +73,7 @@ const EditProfile = ({ navigation }) => {
       dateOfBirth: selectedStartDate,
       country: country,
       profilePictureIndex: selectedImageIndex,
+      profilePictureFromUser : image,
     };
 
     update(userRef, updates);
@@ -86,7 +91,7 @@ const EditProfile = ({ navigation }) => {
   const [openStartDatePicker, setOpenStartDatePicker] = useState(false);
   const today = new Date();
   const startDate = getFormatedDate(
-    today.setDate(today.getDate() - 365 * 200), // 50 years in the past
+    today.setDate(today.getDate() + 1),
     "YYYY/MM/DD"
   );
   const [selectedStartDate, setSelectedStartDate] = useState("01/01/1990");
@@ -105,6 +110,20 @@ const EditProfile = ({ navigation }) => {
     const selectedImage = profileImages[index];
     setSelectedImage(selectedImage);
   };
+
+  const [image, setImage] = useState(null)
+  const handlePickImage = async ()=>{
+    // No permissions request is necessary for launching the image library
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
+    }
+  }
 
   function renderDatePicker() {
     return (
@@ -147,7 +166,7 @@ const EditProfile = ({ navigation }) => {
               onSelectedChange={(date) => setSelectedStartDate(date)}
               options={{
                 backgroundColor: COLORS.primary,
-                textHeaderColor: COLORS.white,
+                textHeaderColor: "#469ab6",
                 textDefaultColor: COLORS.white,
                 selectedTextColor: COLORS.white,
                 mainColor: "#469ab6",
@@ -167,11 +186,23 @@ const EditProfile = ({ navigation }) => {
 
   return (
     <SafeAreaView>
-      <ScrollView style={{ padding: 10 }}>
+      <ScrollView>
         <View style={{ alignItems: "center", marginVertical: 22 }}>
           <TouchableOpacity onPress={() => setShowImagePicker(true)}>
+            {image ? (
+                <Image
+                source={{uri : image}}
+                style={{
+                  height: 170,
+                  width: 170,
+                  borderRadius: 85,
+                  borderWidth: 2,
+                  borderColor: COLORS.primary,
+                }}
+              />
+            ) : (
             <Image
-              source={selectedImage}
+              source={selectedImage }
               style={{
                 height: 170,
                 width: 170,
@@ -180,6 +211,8 @@ const EditProfile = ({ navigation }) => {
                 borderColor: COLORS.primary,
               }}
             />
+            )}
+            
             <View
               style={{
                 position: "absolute",
@@ -187,11 +220,14 @@ const EditProfile = ({ navigation }) => {
                 right: 10,
               }}
             >
-              <MaterialIcons
-                name="photo-camera"
-                size={32}
-                color={COLORS.primary}
-              />
+              <TouchableOpacity 
+                  onPress={handlePickImage}>
+                <MaterialIcons
+                  name="photo-camera"
+                  size={32}
+                  color={COLORS.primary}
+                />
+              </TouchableOpacity>
             </View>
           </TouchableOpacity>
         </View>
