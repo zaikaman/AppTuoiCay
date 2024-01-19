@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -7,20 +8,80 @@ import {
   TextInput,
   Modal,
 } from "react-native";
-import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import * as ImagePicker from "expo-image-picker";
 import { COLORS, FONTS } from "../constants";
 import { MaterialIcons } from "@expo/vector-icons";
-import { imagesDataURL } from "../constants/data";
+import { getDatabase, ref, onValue, update } from "firebase/database";
+import { getFirebaseApp } from "../utils/firebaseHelper";
+import { getAuth } from "firebase/auth";
+import { getStorage } from "firebase/storage";
+import { ref as sRef, put } from "firebase/storage";
 import DatePicker, { getFormatedDate } from "react-native-modern-datepicker";
 
+const profileImages = [
+  require("../assets/images/image1.png"),
+  require("../assets/images/image2.png"),
+  require("../assets/images/image3.png"),
+  require("../assets/images/image4.png"),
+  require("../assets/images/image5.png"),
+  require("../assets/images/image6.png"),
+];
+
 const EditProfile = ({ navigation }) => {
-  const [selectedImage, setSelectedImage] = useState(imagesDataURL[0]);
-  const [name, setName] = useState("dumatuancui");
-  const [email, setEmail] = useState("dumacuocnguyen@gmail.com");
-  const [password, setPassword] = useState("randompassword");
-  const [country, setCountry] = useState("Nigger");
+  useEffect(() => {
+    const app = getFirebaseApp();
+    const db = getDatabase(app);
+    const auth = getAuth(app);
+    const userRef = ref(db, `users/${auth.currentUser.uid}`); // link with the current user ID
+
+    // Fetch user data from Firebase
+    onValue(userRef, (snapshot) => {
+      const data = snapshot.val();
+      setName(data.fullName);
+      setEmail(data.email);
+      // Initialize Date of Birth and Country if they exist
+      if (data.dateOfBirth) {
+        setSelectedStartDate(data.dateOfBirth);
+      }
+      if (data.country) {
+        setCountry(data.country);
+      }
+      if (data.profilePicture) {
+        setSelectedImage(data.profilePicture);
+      }
+      if (data.profilePictureIndex !== undefined) {
+        setSelectedImageIndex(data.profilePictureIndex);
+        setSelectedImage(profileImages[data.profilePictureIndex]);
+      }
+    });
+  }, []);
+
+  const handleSaveChange = () => {
+    const app = getFirebaseApp();
+    const db = getDatabase(app);
+    const auth = getAuth(app);
+    const userRef = ref(db, `users/${auth.currentUser.uid}`); // link with the current user ID
+
+    // Update user data in Firebase
+    const updates = {
+      fullName: name,
+      email: email,
+      dateOfBirth: selectedStartDate,
+      country: country,
+      profilePictureIndex: selectedImageIndex,
+    };
+
+    update(userRef, updates);
+  };
+
+  const [selectedImage, setSelectedImage] = useState(profileImages[0]);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(
+    Math.floor(Math.random() * profileImages.length)
+  );
+  const [name, setName] = useState("Melissa Peters");
+  const [email, setEmail] = useState("metperters@gmail.com");
+  const [country, setCountry] = useState("Nigeria");
+  const [showImagePicker, setShowImagePicker] = useState(false);
 
   const [openStartDatePicker, setOpenStartDatePicker] = useState(false);
   const today = new Date();
@@ -39,19 +100,10 @@ const EditProfile = ({ navigation }) => {
     setOpenStartDatePicker(!openStartDatePicker);
   };
 
-  const handleImageSelection = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      aspect: [4, 4],
-      quality: 1,
-    });
-
-    console.log(result);
-
-    if (!result.canceled) {
-      setSelectedImage(result.assets[0].uri);
-    }
+  const handleImageSelection = (index) => {
+    setSelectedImageIndex(index);
+    const selectedImage = profileImages[index];
+    setSelectedImage(selectedImage);
   };
 
   function renderDatePicker() {
@@ -114,47 +166,12 @@ const EditProfile = ({ navigation }) => {
   }
 
   return (
-    <SafeAreaView
-      style={{
-        flex: 1,
-        backgroundColor: COLORS.white,
-        paddingHorizontal: 22,
-      }}
-    >
-      <View
-        style={{
-          marginHorizontal: 12,
-          flexDirection: "row",
-          justifyContent: "center",
-        }}
-      >
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          style={{
-            position: "absolute",
-            left: 0,
-          }}
-        >
-          <MaterialIcons
-            name="keyboard-arrow-left"
-            size={24}
-            color={COLORS.black}
-          />
-        </TouchableOpacity>
-
-        <Text style={{ ...FONTS.h3 }}>Edit Profile</Text>
-      </View>
-
+    <SafeAreaView>
       <ScrollView>
-        <View
-          style={{
-            alignItems: "center",
-            marginVertical: 22,
-          }}
-        >
-          <TouchableOpacity onPress={handleImageSelection}>
+        <View style={{ alignItems: "center", marginVertical: 22 }}>
+          <TouchableOpacity onPress={() => setShowImagePicker(true)}>
             <Image
-              source={{ uri: selectedImage }}
+              source={selectedImage}
               style={{
                 height: 170,
                 width: 170,
@@ -163,13 +180,11 @@ const EditProfile = ({ navigation }) => {
                 borderColor: COLORS.primary,
               }}
             />
-
             <View
               style={{
                 position: "absolute",
                 bottom: 0,
                 right: 10,
-                zIndex: 9999,
               }}
             >
               <MaterialIcons
@@ -180,6 +195,46 @@ const EditProfile = ({ navigation }) => {
             </View>
           </TouchableOpacity>
         </View>
+
+        {showImagePicker && (
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={showImagePicker}
+            onRequestClose={() => setShowImagePicker(false)}
+          >
+            <View
+              style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+            >
+              <View
+                style={{
+                  flexDirection: "row",
+                  flexWrap: "wrap",
+                  justifyContent: "center",
+                }}
+              >
+                {profileImages.map((image, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    onPress={() => {
+                      handleImageSelection(index);
+                      setShowImagePicker(false);
+                    }}
+                  >
+                    <Image
+                      source={image}
+                      style={{
+                        width: 100,
+                        height: 100,
+                        margin: 10,
+                      }}
+                    />
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </View>
+          </Modal>
+        )}
 
         <View>
           <View
@@ -289,6 +344,7 @@ const EditProfile = ({ navigation }) => {
         </View>
 
         <TouchableOpacity
+          onPress={handleSaveChange}
           style={{
             backgroundColor: COLORS.primary,
             height: 44,
