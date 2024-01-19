@@ -86,7 +86,7 @@ const EditProfile = ({ navigation }) => {
   const [openStartDatePicker, setOpenStartDatePicker] = useState(false);
   const today = new Date();
   const startDate = getFormatedDate(
-    today.setDate(today.getDate() + 1),
+    today.setDate(today.getDate() - 365 * 200), // 50 years in the past
     "YYYY/MM/DD"
   );
   const [selectedStartDate, setSelectedStartDate] = useState("01/01/1990");
@@ -147,7 +147,7 @@ const EditProfile = ({ navigation }) => {
               onSelectedChange={(date) => setSelectedStartDate(date)}
               options={{
                 backgroundColor: COLORS.primary,
-                textHeaderColor: "#469ab6",
+                textHeaderColor: COLORS.white,
                 textDefaultColor: COLORS.white,
                 selectedTextColor: COLORS.white,
                 mainColor: "#469ab6",
