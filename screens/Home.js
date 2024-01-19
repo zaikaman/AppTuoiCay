@@ -209,40 +209,84 @@ const Home = ({ navigation }) => {
         visible={modalVisible}
         onRequestClose={() => {
           setModalVisible(!modalVisible);
-        }}>
-        <View style={styles.modal}>
-        <TouchableOpacity
-        style = {
-          styles.closeModal
-        }
-              onPress={() => {
-                setModalVisible(false);
-              }}>
-              <Text style = {{
-                fontSize : 25,
-                marginLeft : 10,
-                marginTop : 3,
-              }}>x</Text>
-            </TouchableOpacity>
+        }}
+      >
+        <View style={[styles.modal, { backgroundColor: '#abb94d', height: '48%' }]}>
+          <View style={{ height: 1 }} />
+          <Text style={{ textAlign: 'center', marginTop: 20, ...styles.modal_text }}>Menu</Text>
+          <TouchableOpacity
+            style={styles.closeModal}
+            onPress={() => {
+              setModalVisible(false);
+            }}
+          >
+            <Text style={{ fontSize: 25, marginLeft: 10, marginTop: 3 }}>x</Text>
+          </TouchableOpacity>
           <View style={styles.modalContent}>
-    
-            <TouchableOpacity style={styles.modal_textContainer} onPress={() => {navigation.navigate('User'); setModalVisible(false)} }>
-              <Text style={styles.modal_text}>Your Profile</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.modal_textContainer} onPress={() => {navigation.navigate('Vip'); setModalVisible(false)} }>
-              <Text style={styles.modal_text}>Vip</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.modal_textContainer} onPress={() => {navigation.navigate('Shop'); setModalVisible(false)} }>
-              <Text style={styles.modal_text}>Shop</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.modal_textContainer} onPress={() => {navigation.navigate('Leaderboard'); setModalVisible(false)} }>
-              <Text style={styles.modal_text}>LeaderBoard</Text>
-            </TouchableOpacity>
-            <TouchableOpacity 
-              style={styles.modal_textContainer} 
-              onPress={() => {navigation.navigate('Setting'); setModalVisible(false)} }
+            <TouchableOpacity
+              style={[styles.modal_textContainer, { borderWidth: 1, borderColor: 'black', flexDirection: 'row', alignItems: 'center' }]}
+              onPress={() => {
+                navigation.navigate('User');
+                setModalVisible(false);
+              }}
             >
-              <Text style={styles.modal_text}>Settings</Text>
+              <Image
+                source={require('C:/Users/ADMIN/Downloads/Money Tree/Money Tree/assets/images/profile.png')}
+                style={{ width: 40, height: 40, marginRight: 10 }}
+              />
+              <Text style={[styles.modal_text, { marginRight: 22, marginTop: 10 }]}>Your Profile</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.modal_textContainer, { borderWidth: 1, borderColor: 'black', flexDirection: 'row', alignItems: 'center' }]}
+              onPress={() => {
+                navigation.navigate('Vip');
+                setModalVisible(false);
+              }}
+            >
+              <Image
+                source={require('C:/Users/ADMIN/Downloads/Money Tree/Money Tree/assets/images/vip.png')}
+                style={{ width: 40, height: 40, marginRight: 10 }}
+              />
+              <Text style={[styles.modal_text, { marginRight: 56, marginTop: 10 }]}>VIP</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.modal_textContainer, { borderWidth: 1, borderColor: 'black', flexDirection: 'row', alignItems: 'center' }]}
+              onPress={() => {
+                navigation.navigate('Shop');
+                setModalVisible(false);
+              }}
+            >
+              <Image
+                source={require('C:/Users/ADMIN/Downloads/Money Tree/Money Tree/assets/images/shop.png')}
+                style={{ width: 40, height: 40, marginRight: 10 }}
+              />
+              <Text style={[styles.modal_text, { marginRight: 52, marginTop: 10 }]}>Shop</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.modal_textContainer, { borderWidth: 1, borderColor: 'black', flexDirection: 'row', alignItems: 'center' }]}
+              onPress={() => {
+                navigation.navigate('Leaderboard');
+                setModalVisible(false);
+              }}
+            >
+              <Image
+                source={require('C:/Users/ADMIN/Downloads/Money Tree/Money Tree/assets/images/leaderboard.png')}
+                style={{ width: 40, height: 40, marginRight: 10 }}
+              />
+              <Text style={[styles.modal_text, { marginRight: 20, marginTop: 10 }]}>Leaderboard</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.modal_textContainer, { borderWidth: 1, borderColor: 'black', flexDirection: 'row', alignItems: 'center' }]}
+              onPress={() => {
+                navigation.navigate('Setting');
+                setModalVisible(false);
+              }}
+            >
+              <Image
+                source={require('C:/Users/ADMIN/Downloads/Money Tree/Money Tree/assets/images/settings.png')}
+                style={{ width: 40, height: 40, marginRight: 10 }}
+              />
+              <Text style={[styles.modal_text, { marginRight: 40, marginTop: 10 }]}>Settings</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -323,7 +367,7 @@ const styles = StyleSheet.create({
     width: 70,
     height: 70,
     borderRadius: 35,
-    backgroundColor: '#a29182',
+    backgroundColor: '#abb94d',
     justifyContent: 'center',
     alignItems: 'center',
     position: 'absolute',
