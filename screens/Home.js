@@ -32,13 +32,18 @@ const screenHeight = Dimensions.get('window').height;
 
 // Calculate the position of the buttons
 const signOutButtonPosition = {
-  top: screenHeight * 0.08, // 1% from the top of the screen
-  left: screenWidth * 0.78, // 1% from the left of the screen
+  top: screenHeight * 0.08, 
+  left: screenWidth * 0.78, 
 };
 
 const vipButtonPosition = {
-  top: screenHeight * 0.22, // 20% from the top of the screen
-  right: screenWidth * 0.247, // 10% from the right of the screen
+  top: screenHeight * 0.22, 
+  right: screenWidth * 0.247, 
+};
+
+const spinButtonPosition = {
+  top: screenHeight * -0.421, // 5% từ đỉnh màn hình
+  right: screenWidth * -0.455, // 5% từ cạnh phải màn hình
 };
 
 const Home = ({ navigation }) => {
@@ -194,6 +199,9 @@ const Home = ({ navigation }) => {
       <TouchableOpacity style={styles.buttonContainer} onPress={waterTree}>
         <Image source={require('../assets/images/water.png')} style={styles.waterImage} />
       </TouchableOpacity>
+      <TouchableOpacity onPress={() => navigation.navigate('Spin')}>
+        <Image source={require('../assets/images/spin.png')} style={styles.spinButton} />
+      </TouchableOpacity>
       <TouchableOpacity style={styles.signOutButton} onPress={signOutAlert}>
         <Image source={require('../assets/images/back.png')} style={styles.signOutImage} />
       </TouchableOpacity>
@@ -308,6 +316,13 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 25,
     bottom: 90,
+  },
+  spinButton: {
+    width: 80, 
+    height: 80, 
+    position: 'absolute',
+    top: spinButtonPosition.top,
+    right: spinButtonPosition.right,
   },
   remainingText: {
     fontFamily: 'AlegreyaSans-Black',
