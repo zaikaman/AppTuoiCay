@@ -185,7 +185,36 @@ const EditProfile = ({ navigation }) => {
   }
 
   return (
-    <SafeAreaView>
+    <SafeAreaView
+      style={{
+        flex: 1,
+        backgroundColor: COLORS.white,
+        paddingHorizontal: 22,
+      }}
+    >
+      <View
+        style={{
+          marginHorizontal: 12,
+          flexDirection: "row",
+          justifyContent: "center",
+        }}
+      >
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={{
+            position: "absolute",
+            left: 0,
+          }}
+        >
+          <MaterialIcons
+            name="keyboard-arrow-left"
+            size={24}
+            color={COLORS.black}
+          />
+        </TouchableOpacity>
+
+        <Text style={{ ...FONTS.h3 }}>Edit Profile</Text>
+      </View>
       <ScrollView style={{ padding: 10 }}>
         <View style={{ alignItems: "center", marginVertical: 22 }}>
           <TouchableOpacity onPress={() => setShowImagePicker(true)}>
