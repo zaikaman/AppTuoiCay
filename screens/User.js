@@ -167,7 +167,7 @@ const EditProfile = ({ navigation }) => {
 
   return (
     <SafeAreaView>
-      <ScrollView>
+      <ScrollView style={{ padding: 10 }}>
         <View style={{ alignItems: "center", marginVertical: 22 }}>
           <TouchableOpacity onPress={() => setShowImagePicker(true)}>
             <Image
