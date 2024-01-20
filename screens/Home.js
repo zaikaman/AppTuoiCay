@@ -239,7 +239,7 @@ const Home = ({ navigation }) => {
               }}
             >
               <Image
-                source={require('C:/Users/ADMIN/Downloads/Money Tree/Money Tree/assets/images/profile.png')}
+                source={require('../assets/images/profile.png')}
                 style={{ width: 40, height: 40, marginRight: 10 }}
               />
               <Text style={[styles.modal_text, { marginRight: 22, marginTop: 1 }]}>Your Profile</Text>
@@ -252,7 +252,7 @@ const Home = ({ navigation }) => {
               }}
             >
               <Image
-                source={require('C:/Users/ADMIN/Downloads/Money Tree/Money Tree/assets/images/vip.png')}
+                source={require('../assets/images/vip.png')}
                 style={{ width: 40, height: 40, marginRight: 10 }}
               />
               <Text style={[styles.modal_text, { marginRight: 56, marginTop: 1 }]}>VIP</Text>
@@ -265,7 +265,7 @@ const Home = ({ navigation }) => {
               }}
             >
               <Image
-                source={require('C:/Users/ADMIN/Downloads/Money Tree/Money Tree/assets/images/shop.png')}
+                source={require('../assets/images/shop.png')}
                 style={{ width: 40, height: 40, marginRight: 10 }}
               />
               <Text style={[styles.modal_text, { marginRight: 52, marginTop: 1 }]}>Shop</Text>
@@ -278,7 +278,7 @@ const Home = ({ navigation }) => {
               }}
             >
               <Image
-                source={require('C:/Users/ADMIN/Downloads/Money Tree/Money Tree/assets/images/leaderboard.png')}
+                source={require('../assets/images/leaderboard.png')}
                 style={{ width: 40, height: 40, marginRight: 10 }}
               />
               <Text style={[styles.modal_text, { marginRight: 20, marginTop: 1 }]}>Leaderboard</Text>
@@ -291,7 +291,7 @@ const Home = ({ navigation }) => {
               }}
             >
               <Image
-                source={require('C:/Users/ADMIN/Downloads/Money Tree/Money Tree/assets/images/settings.png')}
+                source={require('../assets/images/settings.png')}
                 style={{ width: 40, height: 40, marginRight: 10 }}
               />
               <Text style={[styles.modal_text, { marginRight: 40, marginTop: 1 }]}>Settings</Text>
