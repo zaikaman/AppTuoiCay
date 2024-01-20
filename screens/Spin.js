@@ -22,6 +22,7 @@ const oneTurn = 360;
 const angleBySegment = oneTurn / numberOfSegments;
 const angleOffset = angleBySegment / 2;
 const knobFill = color({ hue: 'purple' });
+const wheelNumbers = [0, 0.25, 0.5, 0.75, 1, 1.5, 2, 5, 10, 100];
 
 const makeWheel = () => {
   const data = Array.from({ length: numberOfSegments }).fill(1);
@@ -41,7 +42,7 @@ const makeWheel = () => {
     return {
       path: instance(arc),
       color: colors[index],
-      value: Math.round(Math.random() * 10 + 1) * 200, //[200, 2200]
+      value: wheelNumbers[index % wheelNumbers.length],
       centroid: instance.centroid(arc)
     };
   });
