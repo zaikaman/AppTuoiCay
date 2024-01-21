@@ -23,11 +23,6 @@ export const updateUserData = async (userId, data) => {
     const snapshot = await get(userRef);
     const userData = snapshot.val();
   
-    // If spinsLeft doesn't exist, create it
-    if (!userData.spinsLeft) {
-      data.spinsLeft = 0; // Or any default value you want
-    }
-  
     await update(userRef, data); // use `update` instead of `set`
   };
   
