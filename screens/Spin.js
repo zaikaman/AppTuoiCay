@@ -7,7 +7,9 @@ import {
   Animated,
   Button,
   ImageBackground,
-  Alert
+  Alert,
+  TouchableOpacity,
+  Image
 } from 'react-native';
 import { GestureHandler } from 'expo';
 import * as d3Shape from 'd3-shape';
@@ -19,6 +21,7 @@ const { width } = Dimensions.get('screen');
 import { getUserData, updateUserData } from '../utils/actions/userActions';
 import { getAuth } from 'firebase/auth';
 import { getFirebaseApp } from '../utils/firebaseHelper';
+import Home from './Home';
 
 const numberOfSegments = 12;
 const wheelSize = width * 0.95;
@@ -69,7 +72,7 @@ class Spin extends React.Component {
     enabled: true,
     finished: false,
     winner: null,
-    spinsLeft: 1, // Số lượt quay còn lại
+    spinsLeft: 10, // Số lượt quay còn lại
     totalWatered: this.props.totalWatered, // Số tiền hiện có
   };
 
@@ -146,53 +149,77 @@ class Spin extends React.Component {
 };
 
   _onPan = ({ nativeEvent }) => {
-    if (this.state.spinsLeft <= 0) {
-      // Inform the user that they have no spins left
-      Alert.alert("You have no spins left!");
-      return;
-    }
     if (nativeEvent.state === State.END) {
-      const { velocityY } = nativeEvent;
+      if (this.state.spinsLeft <= 0) {
+        // Hiển thị hộp thoại cảnh báo
+        Alert.alert(
+          "No Spins Left", // Tiêu đề
+          "You have no spins left!", // Nội dung
+          [
+            {
+              text: "Go Home",
+              onPress: () => {
+                // Thực hiện hành động khi người dùng chọn "Go Home"
+                // Ví dụ: quay lại trang trước đó
+                this.props.navigation.goBack();
+              }
+            },
+            {
+              text: "OK",
+              onPress: () => {
+                // Thực hiện hành động khi người dùng chọn "OK"
+                // Ví dụ: không làm gì cả, giữ nguyên người dùng ở trang này
+              }
+            }
+          ]
+        );
+        return;
+      }
+      if (nativeEvent.state === State.END) {
+        const { velocityY } = nativeEvent;
 
-      Animated.decay(this._angle, {
-        velocity: velocityY / 1000,
-        deceleration: 0.999,
-        useNativeDriver: true
-      }).start(() => {
-        this._angle.setValue(this.angle % oneTurn);
-        const snapTo = snap(oneTurn / numberOfSegments);
-        Animated.timing(this._angle, {
-          toValue: snapTo(this.angle),
-          duration: 300,
+        Animated.decay(this._angle, {
+          velocity: velocityY / 1000,
+          deceleration: 0.999,
           useNativeDriver: true
         }).start(() => {
-          const winnerIndex = this._getWinnerIndex();
-          this.setState({
-            enabled: true,
-            finished: true,
-            winner: this._wheelPaths[winnerIndex].displayValue // Sử dụng displayValue ở đây
+          this._angle.setValue(this.angle % oneTurn);
+          const snapTo = snap(oneTurn / numberOfSegments);
+          Animated.timing(this._angle, {
+            toValue: snapTo(this.angle),
+            duration: 300,
+            useNativeDriver: true
+          }).start(() => {
+            const winnerIndex = this._getWinnerIndex();
+            this.setState({
+              enabled: true,
+              finished: true,
+              winner: this._wheelPaths[winnerIndex].displayValue // Sử dụng displayValue ở đây
+            });
           });
+          // do something here;
         });
-        // do something here;
-      });
+      }
     }
   };
   render() {
     const { totalWatered, spinsLeft } = this.state;
     return (
-      <PanGestureHandler
-        onHandlerStateChange={this._onPan}
-        enabled={this.state.enabled}
-      >
-        <View style={styles.container}>
-          <Text style={styles.totalWatered}>💰 {this.state.totalWatered}</Text>
-          <Text style={styles.spinsLeft}>🔁 {this.state.spinsLeft}</Text> 
+      <View style={styles.container}>
+        <RNText style={styles.totalWatered}>
+          💰 {typeof this.state.totalWatered === 'number' ? this.state.totalWatered.toFixed(4) : this.state.totalWatered}
+        </RNText>
+        <RNText style={styles.spinsLeft}>🔁 {this.state.spinsLeft}</RNText> 
+        <PanGestureHandler
+          onHandlerStateChange={this._onPan}
+          enabled={this.state.enabled}
+        >
           {this._renderSvgWheel()}
-          {this.state.finished && this.state.enabled && this._renderWinner()}
-        </View>
-      </PanGestureHandler>
+        </PanGestureHandler>
+        {this.state.finished && this.state.enabled && this._renderWinner()}
+      </View>
     );
-  }
+  }      
 
   _renderKnob = () => {
     const knobSize = 30;
@@ -336,18 +363,17 @@ class Spin extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
   totalWatered: {
     position: 'absolute',
-    top: 10,
-    left: 10,
+    top: 40,
+    right : 10,
   },
   spinsLeft: {
     position: 'absolute',
-    top: 10,
+    top: 60,
     right: 10,
   },
   winnerText: {
@@ -355,6 +381,11 @@ const styles = StyleSheet.create({
     fontFamily: 'System',
     position: 'absolute',
     bottom: 10,
+  },
+  backImage: {
+    width: 50, // Điều chỉnh kích thước hình ảnh
+    height: 50, // Điều chỉnh kích thước hình ảnh
+    borderRadius: 25, // Làm tròn góc để tạo hình tròn
   }
 });
 
