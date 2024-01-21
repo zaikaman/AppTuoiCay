@@ -3,20 +3,31 @@ import { getFirebaseApp } from '../firebaseHelper';
 
 export const getUserData = async (userId) => {
     try {
-        const app = getFirebaseApp()
-        const dbRef = ref(getDatabase(app))
-        const userRef = child(dbRef, `users/${userId}`)
-
-        const snapshot = await get(userRef)
-        return snapshot.val()
+      const app = getFirebaseApp()
+      const dbRef = ref(getDatabase(app))
+      const userRef = child(dbRef, `users/${userId}`)
+  
+      const snapshot = await get(userRef)
+      return snapshot.val() || {} // Return an empty object if snapshot.val() is undefined
     } catch (err) {
-        console.log(err)
+      console.log(err)
+      return {} // Return an empty object in case of an error
     }
-}
+  }  
 
 export const updateUserData = async (userId, data) => {
-  const db = getDatabase();
-  const userRef = ref(db, 'users/' + userId);
-  await update(userRef, data); // use `update` instead of `set`
-};
-
+    const db = getDatabase();
+    const userRef = ref(db, 'users/' + userId);
+    
+    // Get current user data
+    const snapshot = await get(userRef);
+    const userData = snapshot.val();
+  
+    // If spinsLeft doesn't exist, create it
+    if (!userData.spinsLeft) {
+      data.spinsLeft = 10; // Or any default value you want
+    }
+  
+    await update(userRef, data); // use `update` instead of `set`
+  };
+  
