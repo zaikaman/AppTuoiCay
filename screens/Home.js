@@ -258,7 +258,17 @@ const Home = ({ navigation }) => {
             <TouchableOpacity
               style={[styles.modal_textContainer, { borderWidth: 1, borderColor: 'black', flexDirection: 'row', alignItems: 'center' }]}
               onPress={() => {
-                navigation.navigate('Vip');
+                Alert.alert(
+                  "VIP Button",
+                  "You have clicked the VIP button",
+                  [
+                    {
+                      text: "OK",
+                      onPress: () => console.log("OK Pressed"),
+                      style: "cancel"
+                    }
+                  ]
+                );
                 setModalVisible(false);
               }}
             >
