@@ -352,7 +352,7 @@ const styles = StyleSheet.create({
   },
   winnerText: {
     fontSize: 32,
-    fontFamily: 'Roboto',
+    fontFamily: 'System',
     position: 'absolute',
     bottom: 10,
   }
