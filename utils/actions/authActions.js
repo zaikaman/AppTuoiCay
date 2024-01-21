@@ -97,4 +97,11 @@ const saveToDataStorage = (token, userId, expiryDate) => {
     )
 }
 
-export { createUser, saveToDataStorage }
+// lưu thông tin đăng nhập 
+const signInWithToken = () => {
+    return async (dispatch) => {
+        const app = getFirebaseApp()
+    }
+}
+
+export { createUser, saveToDataStorage, signInWithToken }
