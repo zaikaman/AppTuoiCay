@@ -98,6 +98,17 @@ const Home = ({ navigation }) => {
   }, [treeStage, totalWatered, treeSize, treePosition]);
 
   useEffect(() => {
+    const fetchUserData = async () => {
+      const userData = await getUserData(auth.currentUser.uid);
+      setTotalWatered(userData.totalWatered);
+    };
+  
+    const interval = setInterval(fetchUserData, 5000); // 1000 milliseconds = 1 second
+  
+    return () => clearInterval(interval); // This is important to clear the interval when the component unmounts
+  }, []);  
+
+  useEffect(() => {
     async function loadFont() {
       await Font.loadAsync({
         'AlegreyaSans-Black': require('../assets/fonts/AlegreyaSans-Black.ttf'),
