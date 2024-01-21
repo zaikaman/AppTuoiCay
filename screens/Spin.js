@@ -223,6 +223,12 @@ class Spin extends React.Component {
             source={require('../assets/images/spintext.png')} 
             style={styles.spinTextImage} // Định nghĩa style cho hình ảnh
           />
+          <TouchableOpacity 
+            style={styles.addSpinsButton}
+            onPress={this.addMoreSpins}
+          >
+            <RNText style={styles.addSpinsText}>Add More Spins</RNText>
+          </TouchableOpacity>
           <RNText style={styles.totalWatered}>
             💰 {typeof this.state.totalWatered === 'number' ? this.state.totalWatered.toFixed(4) : this.state.totalWatered}
           </RNText>
@@ -233,6 +239,13 @@ class Spin extends React.Component {
       </PanGestureHandler>
     );
   }       
+
+  addMoreSpins = () => {
+    this.setState(prevState => ({ spinsLeft: prevState.spinsLeft + 10 }), () => {
+      // Update spinsLeft in the database
+      updateUserData(this.auth.currentUser.uid, { spinsLeft: this.state.spinsLeft });
+    });
+  };
 
   _renderKnob = () => {
     const knobSize = 30;
@@ -378,6 +391,16 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  addSpinsButton: {
+    position: 'absolute',
+    bottom: 10,
+    left: 10,
+  },
+  addSpinsText: {
+    fontSize: 18, // Điều chỉnh kích thước chữ
+    color: '#000', // Điều chỉnh màu chữ
+    // Thêm các thuộc tính khác nếu cần
   },
   totalWatered: {
     position: 'absolute',
