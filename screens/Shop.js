@@ -23,7 +23,7 @@ const ShopItem = ({ item, onToggleAccept }) => (
       onPress={() => onToggleAccept(item)}
     >
       <Text style={[styles.buttonText, item.accepted ? styles.buttonTextRemove : styles.buttonTextAccept]}>
-        {item.accepted ? 'Remove' : 'Accept'}
+        {item.accepted ? 'Remove' : 'Apply'}
       </Text>
     </TouchableOpacity>
   </View>
