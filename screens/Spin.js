@@ -80,6 +80,11 @@ class Spin extends React.Component {
     // Fetch user data from the database
     const userData = await getUserData(this.auth.currentUser.uid);
   
+    // If spinsLeft doesn't exist, create it
+    if (!userData.spinsLeft) {
+      userData.spinsLeft = 0; // Or any default value you want
+    }
+  
     // Update state with fetched user data
     this.setState({ 
       totalWatered: userData.totalWatered, 
@@ -97,7 +102,7 @@ class Spin extends React.Component {
   
       this.angle = event.value;
     });
-  }    
+  }          
 
   componentDidUpdate(prevProps, prevState) {
     // Nếu totalWatered thay đổi, cập nhật state và cơ sở dữ liệu
