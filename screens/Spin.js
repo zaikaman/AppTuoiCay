@@ -5,7 +5,9 @@ import {
   Text as RNText,
   Dimensions,
   Animated,
-  Button
+  Button,
+  ImageBackground,
+  Alert
 } from 'react-native';
 import { GestureHandler } from 'expo';
 import * as d3Shape from 'd3-shape';
@@ -14,6 +16,9 @@ import { snap } from '@popmotion/popcorn';
 import { PanGestureHandler, State, GestureHandlerRootView } from 'react-native-gesture-handler';
 import Svg, { Path, G, Text, TSpan } from 'react-native-svg';
 const { width } = Dimensions.get('screen');
+import { getUserData, updateUserData } from '../utils/actions/userActions';
+import { getAuth } from 'firebase/auth';
+import { getFirebaseApp } from '../utils/firebaseHelper';
 
 const numberOfSegments = 12;
 const wheelSize = width * 0.95;
@@ -22,7 +27,8 @@ const oneTurn = 360;
 const angleBySegment = oneTurn / numberOfSegments;
 const angleOffset = angleBySegment / 2;
 const knobFill = color({ hue: 'purple' });
-const wheelNumbers = [0, 0.25, 0.5, 0.75, 1, 1.5, 2, 5, 10, 100];
+const wheelNumbers = [0.001, 0.002, 0.003, 0.004, 0.005, 0.05, 0.1, 0.25, 0.5, "1 FREE SPIN"];
+const displayNumbers = ["🔁", "🔁", "🔁", "🔁", "🔁", "🔁", "🔁", "🔁", "🔁", "🔁"];
 
 const makeWheel = () => {
   const data = Array.from({ length: numberOfSegments }).fill(1);
@@ -42,13 +48,19 @@ const makeWheel = () => {
     return {
       path: instance(arc),
       color: colors[index],
-      value: wheelNumbers[index % wheelNumbers.length],
+      value: displayNumbers[index % displayNumbers.length], // Sử dụng displayNumbers ở đây
+      displayValue: wheelNumbers[index % wheelNumbers.length], // Thêm dòng này
       centroid: instance.centroid(arc)
     };
   });
 };
 
 class Spin extends React.Component {
+  constructor(props) {
+    super(props);
+    this.app = getFirebaseApp();
+    this.auth = getAuth(this.app);
+  }  
   _wheelPaths = makeWheel();
   _angle = new Animated.Value(0);
   angle = 0;
@@ -56,10 +68,22 @@ class Spin extends React.Component {
   state = {
     enabled: true,
     finished: false,
-    winner: null
+    winner: null,
+    spinsLeft: 1, // Số lượt quay còn lại
+    totalWatered: this.props.totalWatered, // Số tiền hiện có
   };
 
-  componentDidMount() {
+  async componentDidMount() {
+    // Fetch user data from the database
+    const userData = await getUserData(this.auth.currentUser.uid);
+  
+    // Update state with fetched user data
+    this.setState({ 
+      totalWatered: userData.totalWatered, 
+      spinsLeft: userData.spinsLeft,
+      // Add other fields as needed
+    });
+  
     this._angle.addListener(event => {
       if (this.state.enabled) {
         this.setState({
@@ -67,10 +91,49 @@ class Spin extends React.Component {
           finished: false
         });
       }
-
+  
       this.angle = event.value;
     });
-  }
+  }    
+
+  componentDidUpdate(prevProps, prevState) {
+    // Nếu totalWatered thay đổi, cập nhật state và cơ sở dữ liệu
+    if (prevState.totalWatered !== this.state.totalWatered) {
+      this.setState({ totalWatered: this.state.totalWatered });
+      updateUserData(this.auth.currentUser.uid, { totalWatered: this.state.totalWatered });
+    }
+  
+    // Nếu spinsLeft thay đổi, cập nhật cơ sở dữ liệu
+    if (prevState.spinsLeft !== this.state.spinsLeft) {
+      updateUserData(this.auth.currentUser.uid, { spinsLeft: this.state.spinsLeft });
+    }
+  
+    // Nếu winner thay đổi, cập nhật totalWatered và spinsLeft
+    if (prevState.winner !== this.state.winner) {
+      const prize = this.state.winner;
+      // Nếu người chơi thắng một lượt quay miễn phí
+      if (prize === "1 FREE SPIN") {
+        this.setState(prevState => ({ spinsLeft: prevState.spinsLeft + 1 }), () => {
+          // Update spinsLeft in the database
+          updateUserData(this.auth.currentUser.uid, { spinsLeft: this.state.spinsLeft });
+        });
+      } else {
+        // If the player wins a prize other than a free spin
+        if (!isNaN(prize)) {
+          this.setState(prevState => ({ 
+            totalWatered: prevState.totalWatered + prize,
+            spinsLeft: prevState.spinsLeft - 1 // Decrease spinsLeft by 1
+          }), () => {
+            // Update totalWatered and spinsLeft in the database
+            updateUserData(this.auth.currentUser.uid, { 
+              totalWatered: this.state.totalWatered,
+              spinsLeft: this.state.spinsLeft
+            });
+          });          
+        }
+      }
+    }
+  }    
 
   _getWinnerIndex = () => {
     const deg = Math.abs(Math.round(this.angle % oneTurn));
@@ -83,6 +146,11 @@ class Spin extends React.Component {
 };
 
   _onPan = ({ nativeEvent }) => {
+    if (this.state.spinsLeft <= 0) {
+      // Inform the user that they have no spins left
+      Alert.alert("You have no spins left!");
+      return;
+    }
     if (nativeEvent.state === State.END) {
       const { velocityY } = nativeEvent;
 
@@ -102,7 +170,7 @@ class Spin extends React.Component {
           this.setState({
             enabled: true,
             finished: true,
-            winner: this._wheelPaths[winnerIndex].value
+            winner: this._wheelPaths[winnerIndex].displayValue // Sử dụng displayValue ở đây
           });
         });
         // do something here;
@@ -110,12 +178,15 @@ class Spin extends React.Component {
     }
   };
   render() {
+    const { totalWatered, spinsLeft } = this.state;
     return (
       <PanGestureHandler
         onHandlerStateChange={this._onPan}
         enabled={this.state.enabled}
       >
         <View style={styles.container}>
+          <Text style={styles.totalWatered}>💰 {this.state.totalWatered}</Text>
+          <Text style={styles.spinsLeft}>🔁 {this.state.spinsLeft}</Text> 
           {this._renderSvgWheel()}
           {this.state.finished && this.state.enabled && this._renderWinner()}
         </View>
@@ -167,14 +238,37 @@ class Spin extends React.Component {
   };
 
   _renderWinner = () => {
+    // Kiểm tra xem winner có phải là số hay không
+    const isNumber = !isNaN(this.state.winner);
+    let message = `You have won ${this.state.winner}!`;
+    let totalWateredRounded = parseFloat(this.state.totalWatered).toFixed(4);
+    
+    // Nếu winner là số, thêm biểu tượng 💰 vào thông báo
+    if (isNumber) {
+      message = `You have won 💰${this.state.winner}!`;
+    }
+  
+    // Tạo thông báo về số dư và số lượt quay còn lại
+    const balanceMessage = `Your total balance is 💰${totalWateredRounded}!`;
+    const spinsMessage = this.state.spinsLeft === 1 
+      ? `You have 🔁${this.state.spinsLeft} spin left!` 
+      : `You have 🔁${this.state.spinsLeft} spins left!`;
+  
     return (
-      <RNText style={styles.winnerText}>You have won ${this.state.winner}!</RNText>
+      <RNText style={styles.winnerText}>
+        {message}
+        {'\n'}
+        {balanceMessage}
+        {'\n'}
+        {spinsMessage}
+      </RNText>
     );
-  };
+  };  
 
   _renderSvgWheel = () => {
     return (
       <View style={styles.container}>
+        
         {this._renderKnob()}
         <Animated.View
           style={{
@@ -246,11 +340,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center'
   },
+  totalWatered: {
+    position: 'absolute',
+    top: 10,
+    left: 10,
+  },
+  spinsLeft: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+  },
   winnerText: {
     fontSize: 32,
     fontFamily: 'Roboto',
     position: 'absolute',
-    bottom: 10
+    bottom: 10,
   }
 });
 
