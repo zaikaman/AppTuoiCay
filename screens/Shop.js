@@ -49,6 +49,7 @@ const Shop = () => {
   const { setSelectedItem } = useContext(ShopContext);
   const [activeTab, setActiveTab] = useState('background');
   const [acceptedItems, setAcceptedItems] = useState({});
+  
   const auth = getAuth();
 
   const tabData = {
@@ -107,6 +108,16 @@ const Shop = () => {
   const onToggleAccept = async (item) => {
     // Create a copy of the accepted items
     let newAcceptedItems = { ...acceptedItems };
+
+    if (newAcceptedItems[item.id]) {
+      if (newAcceptedItems[item.id].accepted) {
+        newAcceptedItems[item.id].accepted = false;
+      } else {
+        newAcceptedItems[item.id].accepted = true;
+      }
+    } else {
+      newAcceptedItems[item.id] = { tab: activeTab, accepted: true };
+    }
   
     // If the item is already accepted, remove it; otherwise, add it
     if (newAcceptedItems[activeTab]) {
@@ -114,17 +125,19 @@ const Shop = () => {
         delete newAcceptedItems[activeTab];
   
         // If the active tab is 'animals' and the item id is 3 or 4, update the corresponding field in the database
-        if (activeTab === 'animals' && (item.id === 3 || item.id === 4)) {
-          const field = item.id === 3 ? 'Rabbitlvl1' : 'Rabbitlvl2';
-          await updateUserData(auth.currentUser.uid, { [field]: 'No' });
+        if (activeTab === 'animals' && item.id === 3) {
+          await updateUserData(auth.currentUser.uid, { Rabbitlvl1: 'No', Rabbitlvl1Applied: 'No' });
+        } else if (activeTab === 'animals' && item.id === 4) {
+          await updateUserData(auth.currentUser.uid, { Rabbitlvl2: 'No', Rabbitlvl2Applied: 'No' });
         }
       } else {
         newAcceptedItems[activeTab] = item.id;
   
         // If the active tab is 'animals' and the item id is 3 or 4, update the corresponding field in the database
-        if (activeTab === 'animals' && (item.id === 3 || item.id === 4)) {
-          const field = item.id === 3 ? 'Rabbitlvl1' : 'Rabbitlvl2';
-          await updateUserData(auth.currentUser.uid, { [field]: 'Yes' });
+        if (activeTab === 'animals' && item.id === 3) {
+          await updateUserData(auth.currentUser.uid, { Rabbitlvl1: 'Yes', Rabbitlvl1Applied: 'Yes' });
+        } else if (activeTab === 'animals' && item.id === 4) {
+          await updateUserData(auth.currentUser.uid, { Rabbitlvl2: 'Yes', Rabbitlvl2Applied: 'Yes' });
         }
       }
     } else {
@@ -136,12 +149,15 @@ const Shop = () => {
   
     // Update the state with the new accepted items
     setAcceptedItems(newAcceptedItems);
-  };      
+  };        
 
   const renderItem = ({ item }) => (
     <ShopItem
       key={item.id}
-      item={{ ...item, accepted: acceptedItems[activeTab] === item.id }}
+      item={{
+        ...item,
+        accepted: acceptedItems[item.id] ? acceptedItems[item.id].accepted : false,
+      }}
       onToggleAccept={onToggleAccept}
     />
   );
