@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { View, Image, TouchableOpacity, StyleSheet, Dimensions, Text, Alert } from 'react-native';
 import { Video } from 'expo-av';
 import ProgressBarAnimated from 'react-native-progress-bar-animated';
@@ -9,6 +9,7 @@ import { getAuth } from 'firebase/auth';
 import { Audio } from 'expo-av';
 import { Modal } from 'react-native';
 import sound from './sound';
+import { ShopContext } from './ShopContext';
 
 const stages = [
   require('../assets/images/tree1.png'),
@@ -47,6 +48,9 @@ const spinButtonPosition = {
 };
 
 const Home = ({ navigation }) => {
+  const [rabbitLvl1, setRabbitLvl1] = useState('No');
+  const [rabbitLvl2, setRabbitLvl2] = useState('No');
+  const { selectedItem } = useContext(ShopContext);
   const [treeStage, setTreeStage] = useState(0);
   const [treeSize, setTreeSize] = useState(sizes[0]);
   const [treePosition, setTreePosition] = useState(positions[0]);
@@ -107,6 +111,33 @@ const Home = ({ navigation }) => {
   
     return () => clearInterval(interval); // This is important to clear the interval when the component unmounts
   }, []);  
+
+  useEffect(() => {
+    const initializeFields = async () => {
+      const userData = await getUserData(auth.currentUser.uid);
+
+      // Check if the fields exist, and if not, add them
+      if (userData.Rabbitlvl1 === undefined || userData.Rabbitlvl2 === undefined) {
+        await updateUserData(auth.currentUser.uid, {
+          ...userData,
+          Rabbitlvl1: userData.Rabbitlvl1 || 'No',
+          Rabbitlvl2: userData.Rabbitlvl2 || 'No',
+        });
+      }
+    };
+
+    initializeFields();
+  }, []);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const userData = await getUserData(auth.currentUser.uid);
+      setRabbitLvl1(userData.Rabbitlvl1);
+      setRabbitLvl2(userData.Rabbitlvl2);
+    };
+
+    fetchUserData();
+  }, []);
 
   useEffect(() => {
     async function loadFont() {
@@ -195,6 +226,9 @@ const Home = ({ navigation }) => {
         style={{ ...styles.tree, width: treeSize, height: treeSize, top: treePosition }}
         resizeMode="contain"
       />
+      {selectedItem && <Image source={selectedItem.image} style={styles.backgroundImage} />}
+      {rabbitLvl1 === 'Yes' && <Image source={require('../assets/images/rabbitlvl1home.png')} style={styles.rabbitImage1} />}
+      {rabbitLvl2 === 'Yes' && <Image source={require('../assets/images/rabbitlvl2home.png')} style={styles.rabbitImage2} />}
       <View style={styles.progressBarContainer}>
         <ProgressBarAnimated
           width={barWidth}
@@ -344,6 +378,22 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: spinButtonPosition.top,
     right: spinButtonPosition.right,
+  },
+  rabbitImage1: {
+    width: '10%', // or any other size
+    height: '10%', // or any other size
+    position: 'absolute', // if you want it to be positioned absolutely
+    top : 550,
+    bottom : 40,
+    left : 80,
+  },
+  rabbitImage2: {
+    width: '10%', // or any other size
+    height: '10%', // or any other size
+    position: 'absolute', // if you want it to be positioned absolutely
+    top : 550,
+    bottom : 40,
+    left : 300,
   },
   remainingText: {
     fontFamily: 'AlegreyaSans-Black',
