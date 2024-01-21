@@ -25,9 +25,10 @@ export const updateUserData = async (userId, data) => {
   
     // If spinsLeft doesn't exist, create it
     if (!userData.spinsLeft) {
-      data.spinsLeft = 10; // Or any default value you want
+      data.spinsLeft = 0; // Or any default value you want
     }
   
     await update(userRef, data); // use `update` instead of `set`
   };
   
+
