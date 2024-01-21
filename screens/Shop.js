@@ -1,11 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions, FlatList, ScrollView } from 'react-native';
 import ProgressBarAnimated from 'react-native-progress-bar-animated';
 import { SafeAreaView } from 'react-native-safe-area-context';
+// Import images
+import rabbitlvl1 from '../assets/images/rabbitlvl1.png';
+import rabbitlvl2 from '../assets/images/rabbitlvl2.png';
+import defaultImage from '../assets/images/x.png';
+import { ShopContext } from './ShopContext';
+import { getUserData, updateUserData } from '../utils/actions/userActions';
+import { getAuth } from 'firebase/auth';
+
+const images = {
+  'Rabbit lv1 :\n +1% watering perfomance': rabbitlvl1,
+  'Rabbit lv2 :\n +2% watering perfomance': rabbitlvl2,
+};
 
 const ShopItem = ({ item, onToggleAccept }) => (
+  
   <View style={styles.itemContainer}>
-    <Image source={require("../assets/images/animal2.png")} style={styles.itemImage} />
+    <Image 
+      source={item.description && images[item.description] ? images[item.description] : defaultImage} 
+      style={styles.itemImage} 
+    />
     <Text style={styles.price}>{item.price}</Text>
     <Text style={styles.description}>{item.description}</Text>
     <Text style={styles.level}>Level {item.level}</Text>
@@ -30,8 +46,10 @@ const ShopItem = ({ item, onToggleAccept }) => (
 );
 
 const Shop = () => {
+  const { setSelectedItem } = useContext(ShopContext);
   const [activeTab, setActiveTab] = useState('background');
   const [acceptedItems, setAcceptedItems] = useState({});
+  const auth = getAuth();
 
   const tabData = {
     background: [
@@ -44,14 +62,14 @@ const Shop = () => {
       { id: 7, price: '$40.00', description: 'Background 2 description', level: 7, progress: 10 },
     ],
     animals: [
-      { id: 3, price: '$5.00', description: 'Thỏ lv1 : Tăng 2% hiệu suất', level: 1, progress: 80, image: 'animal1.png' },
-      { id: 3, price: '$5.00', description: 'Thỏ lv2 : Tăng 2% hiệu suất', level: 1, progress: 80, image: 'animal2.png' },
-      { id: 5, price: '$15.00', description: 'Rắn lv1 : Tăng 8% hiệu suất', level: 3, progress: 40 },
-      { id: 6, price: '$20.00', description: 'Rắn lv2 : Tăng 12% hiệu suất', level: 4, progress: 30 },
-      { id: 7, price: '$25.00', description: 'Chim lv1 : Tăng 16% hiệu suất', level: 5, progress: 20 },
-      { id: 8, price: '$30.00', description: 'Chim lv2 : Tăng 21% hiệu suất', level: 6, progress: 15 },
-      { id: 9, price: '$35.00', description: 'Voi lv1 : Tăng 26% hiệu suất', level: 7, progress: 10 },
-      { id: 10, price: '$40.00', description: 'Voi lv2 : Tăng 32% hiệu suất', level: 8, progress: 5 },
+      { id: 3, price: '$5.00', description: 'Rabbit lv1 :\n +1% watering perfomance', level: 1, progress: 80 },
+      { id: 4, price: '$5.00', description: 'Rabbit lv2 :\n +2% watering perfomance', level: 1, progress: 80 },
+      { id: 5, price: '$15.00', description: 'Snake lv1 :\n +4% watering perfomance', level: 3, progress: 40 },
+      { id: 6, price: '$20.00', description: 'Snake lv2 :\n +8% watering perfomance', level: 4, progress: 30 },
+      { id: 7, price: '$25.00', description: 'Bird lv1 :\n +10% watering perfomance', level: 5, progress: 20 },
+      { id: 8, price: '$30.00', description: 'Bird lv2 :\n +12% watering perfomance', level: 6, progress: 15 },
+      { id: 9, price: '$35.00', description: 'Elephant lv1 :\n +15% watering perfomance', level: 7, progress: 10 },
+      { id: 10, price: '$40.00', description: 'Elephant lv2 :\n +20% watering perfomance', level: 8, progress: 5 },
     ],
     decorations: [
       { id: 5, price: '$12.00', description: 'Decoration 1 description', level: 1, progress: 40 },
@@ -86,22 +104,39 @@ const Shop = () => {
     />
   );
 
-  const onToggleAccept = (item) => {
-    const newAcceptedItems = { ...acceptedItems };
-
+  const onToggleAccept = async (item) => {
+    // Create a copy of the accepted items
+    let newAcceptedItems = { ...acceptedItems };
+  
     // If the item is already accepted, remove it; otherwise, add it
     if (newAcceptedItems[activeTab]) {
       if (newAcceptedItems[activeTab] === item.id) {
         delete newAcceptedItems[activeTab];
+  
+        // If the active tab is 'animals' and the item id is 3 or 4, update the corresponding field in the database
+        if (activeTab === 'animals' && (item.id === 3 || item.id === 4)) {
+          const field = item.id === 3 ? 'Rabbitlvl1' : 'Rabbitlvl2';
+          await updateUserData(auth.currentUser.uid, { [field]: 'No' });
+        }
       } else {
         newAcceptedItems[activeTab] = item.id;
+  
+        // If the active tab is 'animals' and the item id is 3 or 4, update the corresponding field in the database
+        if (activeTab === 'animals' && (item.id === 3 || item.id === 4)) {
+          const field = item.id === 3 ? 'Rabbitlvl1' : 'Rabbitlvl2';
+          await updateUserData(auth.currentUser.uid, { [field]: 'Yes' });
+        }
       }
     } else {
       newAcceptedItems[activeTab] = item.id;
     }
-
+  
+    // Update the selected item
+    setSelectedItem(item);
+  
+    // Update the state with the new accepted items
     setAcceptedItems(newAcceptedItems);
-  };
+  };      
 
   const renderItem = ({ item }) => (
     <ShopItem
@@ -114,7 +149,7 @@ const Shop = () => {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: 'black' }}>
       <View style={styles.header}>
-        <Image source={require("../assets/images/shop2.png")} style={styles.shopIcon} />
+        <Image source={require("../assets/images/shop.png")} style={styles.shopIcon} />
         {renderTabs()}
       </View>
       <ScrollView>
@@ -187,6 +222,7 @@ const styles = StyleSheet.create({
   description: {
     fontSize: 12,
     marginVertical: 3,
+    textAlign: 'center',
   },
   level: {
     fontSize: 14,
