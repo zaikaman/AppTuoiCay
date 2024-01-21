@@ -205,21 +205,34 @@ class Spin extends React.Component {
   render() {
     const { totalWatered, spinsLeft } = this.state;
     return (
-      <View style={styles.container}>
-        <RNText style={styles.totalWatered}>
-          💰 {typeof this.state.totalWatered === 'number' ? this.state.totalWatered.toFixed(4) : this.state.totalWatered}
-        </RNText>
-        <RNText style={styles.spinsLeft}>🔁 {this.state.spinsLeft}</RNText> 
-        <PanGestureHandler
-          onHandlerStateChange={this._onPan}
-          enabled={this.state.enabled}
-        >
+      <PanGestureHandler
+        onHandlerStateChange={this._onPan}
+        enabled={this.state.enabled}
+      >
+        <View style={styles.container}>
+          <TouchableOpacity 
+            style={styles.goBackButton}
+            onPress={() => this.props.navigation.goBack()}
+          >
+            <Image 
+              source={require('../assets/images/back.png')} 
+              style={styles.backImage}
+            />
+          </TouchableOpacity>
+          <Image 
+            source={require('../assets/images/spintext.png')} 
+            style={styles.spinTextImage} // Định nghĩa style cho hình ảnh
+          />
+          <RNText style={styles.totalWatered}>
+            💰 {typeof this.state.totalWatered === 'number' ? this.state.totalWatered.toFixed(4) : this.state.totalWatered}
+          </RNText>
+          <RNText style={styles.spinsLeft}>🔁 {this.state.spinsLeft}</RNText> 
           {this._renderSvgWheel()}
-        </PanGestureHandler>
-        {this.state.finished && this.state.enabled && this._renderWinner()}
-      </View>
+          {this.state.finished && this.state.enabled && this._renderWinner()}
+        </View>
+      </PanGestureHandler>
     );
-  }      
+  }       
 
   _renderKnob = () => {
     const knobSize = 30;
@@ -370,11 +383,13 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 40,
     right : 10,
+    fontSize: 20,
   },
   spinsLeft: {
     position: 'absolute',
-    top: 60,
+    top: 70,
     right: 10,
+    fontSize: 20,
   },
   winnerText: {
     fontSize: 32,
@@ -382,10 +397,21 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 10,
   },
+  goBackButton: {
+    position: 'absolute',
+    top: 30,
+    left: 0,
+    margin: 10, // Điều chỉnh khoảng cách từ góc màn hình
+  },
   backImage: {
     width: 50, // Điều chỉnh kích thước hình ảnh
     height: 50, // Điều chỉnh kích thước hình ảnh
     borderRadius: 25, // Làm tròn góc để tạo hình tròn
+  },
+  spinTextImage: {
+    width: 200, // Điều chỉnh kích thước hình ảnh
+    height: 100, // Điều chỉnh kích thước hình ảnh
+    top : 80
   }
 });
 
