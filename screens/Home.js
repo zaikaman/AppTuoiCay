@@ -135,10 +135,17 @@ const Home = ({ navigation }) => {
       setRabbitLvl1(userData.Rabbitlvl1);
       setRabbitLvl2(userData.Rabbitlvl2);
     };
-
+  
+    // Call the function once immediately
     fetchUserData();
+  
+    // Then set up the interval to call the function every 3 seconds
+    const intervalId = setInterval(fetchUserData, 3000);
+  
+    // Don't forget to clear the interval when the component unmounts
+    return () => clearInterval(intervalId);
   }, []);
-
+  
   useEffect(() => {
     async function loadFont() {
       await Font.loadAsync({
