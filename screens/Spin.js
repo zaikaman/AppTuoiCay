@@ -301,19 +301,9 @@ class Spin extends React.Component {
       message = `You have won 💰${this.state.winner}!`;
     }
   
-    // Tạo thông báo về số dư và số lượt quay còn lại
-    const balanceMessage = `Your total balance is 💰${totalWateredRounded}!`;
-    const spinsMessage = this.state.spinsLeft === 1 
-      ? `You have 🔁${this.state.spinsLeft} spin left!` 
-      : `You have 🔁${this.state.spinsLeft} spins left!`;
-  
     return (
       <RNText style={styles.winnerText}>
         {message}
-        {'\n'}
-        {balanceMessage}
-        {'\n'}
-        {spinsMessage}
       </RNText>
     );
   };  
@@ -418,7 +408,7 @@ const styles = StyleSheet.create({
     fontSize: 32,
     fontFamily: 'System',
     position: 'absolute',
-    bottom: 10,
+    top : 680,
   },
   goBackButton: {
     position: 'absolute',
