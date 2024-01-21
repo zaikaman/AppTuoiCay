@@ -2,8 +2,25 @@ import { View, Text, ImageBackground, Image, TouchableOpacity, StyleSheet } from
 import React from 'react'
 import { images, FONTS, COLORS, SIZES } from '../constants'
 import Button from '../components/Button'
+import { signInWithToken } from '../utils/actions/authActions'
+import { useDispatch } from 'react-redux'
 
 const Welcome = ({ navigation }) => {
+  const dispatch = useDispatch()
+
+  const authTokenHandle = async () => {
+      try {
+          const action = signInWithToken()
+          await dispatch(action) // !!!
+          setTimeout(() => {
+            navigation.navigate('Home');
+          }, 1000);
+        } catch (error) {
+          console.log(error);
+        } 
+  }
+
+  authTokenHandle()
   return (
     <View style={{flex: 1}}>
         <ImageBackground 
