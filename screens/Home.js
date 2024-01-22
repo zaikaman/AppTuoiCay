@@ -113,27 +113,31 @@ const Home = ({ navigation }) => {
   }, []);  
 
   useEffect(() => {
-    const initializeFields = async () => {
-      const userData = await getUserData(auth.currentUser.uid);
+  const fetchUserData = async () => {
+    const userData = await getUserData(auth.currentUser.uid);
 
-      // Check if the fields exist, and if not, add them
-      if (userData.Rabbitlvl1 === undefined || userData.Rabbitlvl2 === undefined) {
-        await updateUserData(auth.currentUser.uid, {
-          ...userData,
-          Rabbitlvl1: userData.Rabbitlvl1 || 'No',
-          Rabbitlvl2: userData.Rabbitlvl2 || 'No',
-        });
-      }
-    };
+    // Check if the fields exist, and if not, add them
+    if (userData.Rabbitlvl1Applied === undefined) {
+      userData.Rabbitlvl1Applied = 'No';
+      await updateUserData(auth.currentUser.uid, { Rabbitlvl1Applied: 'No' });
+    }
+    if (userData.Rabbitlvl2Applied === undefined) {
+      userData.Rabbitlvl2Applied = 'No';
+      await updateUserData(auth.currentUser.uid, { Rabbitlvl2Applied: 'No' });
+    }
 
-    initializeFields();
-  }, []);
+    setRabbitLvl1(userData.Rabbitlvl1Applied);
+    setRabbitLvl2(userData.Rabbitlvl2Applied);
+  };
+
+  fetchUserData();
+}, []);
 
   useEffect(() => {
     const fetchUserData = async () => {
       const userData = await getUserData(auth.currentUser.uid);
-      setRabbitLvl1(userData.Rabbitlvl1);
-      setRabbitLvl2(userData.Rabbitlvl2);
+      setRabbitLvl1(userData.Rabbitlvl1Applied);
+      setRabbitLvl2(userData.Rabbitlvl2Applied);
     };
   
     // Call the function once immediately
