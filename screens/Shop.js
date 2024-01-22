@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions, FlatList, ScrollView } from 'react-native';
 import ProgressBarAnimated from 'react-native-progress-bar-animated';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -126,6 +126,25 @@ const Shop = () => {
     ],
   };
 
+  useEffect(() => {
+    const fetchData = async () => {
+      const userData = await getUserData(auth.currentUser.uid);
+      let newAcceptedItems = { ...acceptedItems };
+  
+      if (userData.Rabbitlvl1Applied === 'Yes') {
+        newAcceptedItems[3] = { tab: 'animals', accepted: true }; // 3 is the id of rabbitlvl1
+      }
+  
+      if (userData.Rabbitlvl2Applied === 'Yes') {
+        newAcceptedItems[4] = { tab: 'animals', accepted: true }; // 4 is the id of rabbitlvl2
+      }
+  
+      setAcceptedItems(newAcceptedItems);
+    };
+  
+    fetchData();
+  }, []);  
+
   const renderTabs = () => (
     <FlatList
       data={Object.keys(tabData)}
@@ -147,51 +166,37 @@ const Shop = () => {
     />
   );
 
-  const onToggleAccept = async (item) => {
-    // Create a copy of the accepted items
-    let newAcceptedItems = { ...acceptedItems };
+  // Mapping between item.id and the corresponding field in the database
+const idToField = {
+  3: 'Rabbitlvl1',
+  4: 'Rabbitlvl2',
+  // Add more mappings here as needed
+};
 
-    if (newAcceptedItems[item.id]) {
-      if (newAcceptedItems[item.id].accepted) {
-        newAcceptedItems[item.id].accepted = false;
-      } else {
-        newAcceptedItems[item.id].accepted = true;
-      }
-    } else {
-      newAcceptedItems[item.id] = { tab: activeTab, accepted: true };
-    }
-  
-    // If the item is already accepted, remove it; otherwise, add it
-    if (newAcceptedItems[activeTab]) {
-      if (newAcceptedItems[activeTab] === item.id) {
-        delete newAcceptedItems[activeTab];
-  
-        // If the active tab is 'animals' and the item id is 3 or 4, update the corresponding field in the database
-        if (activeTab === 'animals' && item.id === 3) {
-          await updateUserData(auth.currentUser.uid, { Rabbitlvl1: 'No', Rabbitlvl1Applied: 'No' });
-        } else if (activeTab === 'animals' && item.id === 4) {
-          await updateUserData(auth.currentUser.uid, { Rabbitlvl2: 'No', Rabbitlvl2Applied: 'No' });
-        }
-      } else {
-        newAcceptedItems[activeTab] = item.id;
-  
-        // If the active tab is 'animals' and the item id is 3 or 4, update the corresponding field in the database
-        if (activeTab === 'animals' && item.id === 3) {
-          await updateUserData(auth.currentUser.uid, { Rabbitlvl1: 'Yes', Rabbitlvl1Applied: 'Yes' });
-        } else if (activeTab === 'animals' && item.id === 4) {
-          await updateUserData(auth.currentUser.uid, { Rabbitlvl2: 'Yes', Rabbitlvl2Applied: 'Yes' });
-        }
-      }
-    } else {
-      newAcceptedItems[activeTab] = item.id;
-    }
-  
-    // Update the selected item
-    setSelectedItem(item);
-  
-    // Update the state with the new accepted items
-    setAcceptedItems(newAcceptedItems);
-  };        
+const onToggleAccept = async (item) => {
+  let newAcceptedItems = { ...acceptedItems };
+
+  // Toggle the acceptance state of the item
+  if (newAcceptedItems[item.id]) {
+    newAcceptedItems[item.id].accepted = !newAcceptedItems[item.id].accepted;
+  } else {
+    newAcceptedItems[item.id] = { tab: activeTab, accepted: true };
+  }
+
+  // Update the active tab
+  newAcceptedItems[activeTab] = newAcceptedItems[activeTab] === item.id ? undefined : item.id;
+
+  // Update the database
+  if (activeTab === 'animals') {
+    const level = item.id === 3 ? '1' : '2';
+    const applied = newAcceptedItems[item.id].accepted ? 'Yes' : 'No';
+    await updateUserData(auth.currentUser.uid, { [`Rabbitlvl${level}Applied`]: applied });
+  }
+
+  // Update the selected item and the accepted items
+  setSelectedItem(item);
+  setAcceptedItems(newAcceptedItems);
+};  
 
   const renderItem = ({ item }) => (
     <ShopItem
