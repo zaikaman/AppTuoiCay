@@ -17,6 +17,7 @@ LogBox.ignoreLogs(['Animated: `useNativeDriver` was not specified.']);
 LogBox.ignoreLogs(['ViewPropTypes has been removed from React Native.']);
 LogBox.ignoreLogs(['componentWillReceiveProps has been renamed, and is not recommended for use.']);
 LogBox.ignoreLogs(['The method or property expo-font.unloadAsync is not available on android, are you sure you\'ve linked all the native dependencies properly?']);
+LogBox.ignoreLogs(['`flexWrap: `wrap`` is not supported with the `VirtualizedList` components']);
 
 const Stack = createNativeStackNavigator();
 
