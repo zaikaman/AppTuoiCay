@@ -97,10 +97,34 @@ const saveToDataStorage = (token, userId, expiryDate) => {
     )
 }
 
-// lưu thông tin đăng nhập 
+// lưu thông tin đăng nhập
+// !!!!!!!!!! cần xem lại vấn đề AutoLogin 
 const signInWithToken = () => {
     return async (dispatch) => {
         const app = getFirebaseApp()
+        const auth = getAuth(app)
+        
+        // try {
+        //     const userDataJson = await AsyncStorage.getItem('userData')
+        //     if(userDataJson != null) {
+        //         const { token, userId, expiryDate } = JSON.parse(userDataJson);
+        //         const now = new Date();
+        //         if (userDataJson === null) {
+        //             console.log(expiryDate)
+        //             console.log(now)
+        //         // Token is still valid, user is logged in
+        //         // Load user data and navigate to the main screen
+        //             const userData = await getUserData(userId)
+        //             if(userData.accessToken === token) {
+        //                 dispatch(authenticate({token, userData}))
+        //             }
+        //         }
+        //     } else {
+        //         console.log('User date empty !')
+        //     }
+        // } catch (error) {
+        //     console.error(error)
+        // }
     }
 }
 
