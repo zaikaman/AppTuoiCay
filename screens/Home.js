@@ -578,7 +578,7 @@ const styles = StyleSheet.create({
     width: '12%', // or any other size
     height: '12%', // or any other size
     position: 'absolute', // if you want it to be positioned absolutely
-    top : 450,
+    top : 480,
     bottom : 40,
     left : 22,
   },
