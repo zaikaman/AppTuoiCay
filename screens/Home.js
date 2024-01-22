@@ -50,6 +50,24 @@ const spinButtonPosition = {
 const Home = ({ navigation }) => {
   const [rabbitLvl1, setRabbitLvl1] = useState('No');
   const [rabbitLvl2, setRabbitLvl2] = useState('No');
+  const [foxLvl1, setFoxLvl1] = useState('No');
+  const [foxLvl2, setFoxLvl2] = useState('No');
+  const [birdLvl1, setBirdLvl1] = useState('No');
+  const [birdLvl2, setBirdLvl2] = useState('No');
+  const [monkeyLvl1, setMonkeyLvl1] = useState('No');
+  const [monkeyLvl2, setMonkeyLvl2] = useState('No');
+  // const [elephantLvl1, setElephantLvl1] = useState('No');
+  // const [elephantLvl2, setElephantLvl2] = useState('No');
+  const [horseLvl1, setHorseLvl1] = useState('No');
+  const [horseLvl2, setHorseLvl2] = useState('No');
+  const [wolfLvl1, setWolfLvl1] = useState('No');
+  const [wolfLvl2, setWolfLvl2] = useState('No');
+  // const [background1, setBackground1] = useState('No');
+  // const [background2, setBackground2] = useState('No');
+  // const [background3, setBackground3] = useState('No');
+  // const [background4, setBackground4] = useState('No');
+  // const [background5, setBackground5] = useState('No');
+  // const [background6, setBackground6] = useState('No');
   const { selectedItem } = useContext(ShopContext);
   const [treeStage, setTreeStage] = useState(0);
   const [treeSize, setTreeSize] = useState(sizes[0]);
@@ -113,31 +131,50 @@ const Home = ({ navigation }) => {
   }, []);  
 
   useEffect(() => {
-  const fetchUserData = async () => {
-    const userData = await getUserData(auth.currentUser.uid);
-
-    // Check if the fields exist, and if not, add them
-    if (userData.Rabbitlvl1Applied === undefined) {
-      userData.Rabbitlvl1Applied = 'No';
-      await updateUserData(auth.currentUser.uid, { Rabbitlvl1Applied: 'No' });
-    }
-    if (userData.Rabbitlvl2Applied === undefined) {
-      userData.Rabbitlvl2Applied = 'No';
-      await updateUserData(auth.currentUser.uid, { Rabbitlvl2Applied: 'No' });
-    }
-
-    setRabbitLvl1(userData.Rabbitlvl1Applied);
-    setRabbitLvl2(userData.Rabbitlvl2Applied);
-  };
-
-  fetchUserData();
-}, []);
-
+    const fetchUserData = async () => {
+      const userData = await getUserData(auth.currentUser.uid);
+  
+      // Check if the fields exist, and if not, add them
+      const fields = [
+        'Rabbitlvl1', 'Rabbitlvl2',
+        'Foxlvl1', 'Foxlvl2',
+        'Birdlvl1', 'Birdlvl2',
+        'Monkeylvl1', 'Monkeylvl2',
+        // 'Elephantlvl1', 'Elephantlvl2',
+        'Horselvl1', 'Horselvl2',
+        'Wolflvl1', 'Wolflvl2',
+        // 'Background1', 'Background2', 'Background3',
+        // 'Background4', 'Background5', 'Background6'
+      ];
+      for (let field of fields) {
+        if (userData[`${field}Applied`] === undefined) {
+          userData[`${field}Applied`] = 'No';
+          await updateUserData(auth.currentUser.uid, { [`${field}Applied`]: 'No' });
+        }
+        setFieldState(field, userData[`${field}Applied`]);
+      }
+    };
+  
+    fetchUserData();
+  }, []);
+  
   useEffect(() => {
     const fetchUserData = async () => {
       const userData = await getUserData(auth.currentUser.uid);
-      setRabbitLvl1(userData.Rabbitlvl1Applied);
-      setRabbitLvl2(userData.Rabbitlvl2Applied);
+      const fields = [
+        'Rabbitlvl1', 'Rabbitlvl2',
+        'Foxlvl1', 'Foxlvl2',
+        'Birdlvl1', 'Birdlvl2',
+        'Monkeylvl1', 'Monkeylvl2',
+        // 'Elephantlvl1', 'Elephantlvl2',
+        'Horselvl1', 'Horselvl2',
+        'Wolflvl1', 'Wolflvl2'
+        // 'Background1', 'Background2', 'Background3',
+        // 'Background4', 'Background5', 'Background6'
+      ];
+      for (let field of fields) {
+        setFieldState(field, userData[`${field}Applied`]);
+      }
     };
   
     // Call the function once immediately
@@ -148,7 +185,7 @@ const Home = ({ navigation }) => {
   
     // Don't forget to clear the interval when the component unmounts
     return () => clearInterval(intervalId);
-  }, []);
+  }, []);  
   
   useEffect(() => {
     async function loadFont() {
@@ -165,6 +202,55 @@ const Home = ({ navigation }) => {
       Font.unloadAsync('AlegreyaSans-Black');
     };
   }, []);
+
+  const setFieldState = (field, value) => {
+    switch(field) {
+      case 'Rabbitlvl1':
+        setRabbitLvl1(value);
+        break;
+      case 'Rabbitlvl2':
+        setRabbitLvl2(value);
+        break;
+      case 'Foxlvl1':
+        setFoxLvl1(value);
+        break;
+      case 'Foxlvl2':
+        setFoxLvl2(value);
+        break;
+      case 'Birdlvl1':
+        setBirdLvl1(value);
+        break;
+      case 'Birdlvl2':
+        setBirdLvl2(value);
+        break;
+      case 'Monkeylvl1':
+        setMonkeyLvl1(value);
+        break;
+      case 'Monkeylvl2':
+        setMonkeyLvl2(value);
+        break;
+      // case 'Elephantlvl1':
+      //   setElephantLvl1(value);
+      //   break;
+      // case 'Elephantlvl2':
+      //   setElephantLvl2(value);
+      //   break;
+      case 'Horselvl1':
+        setHorseLvl1(value);
+        break;
+      case 'Horselvl2':
+        setHorseLvl2(value);
+        break;
+      case 'Wolflvl1':
+        setWolfLvl1(value);
+        break;
+      case 'Wolflvl2':
+        setWolfLvl2(value);
+        break;
+      default:
+        console.log(`No matching field found for ${field}`);
+    }
+  };  
 
   const waterTree = () => {
     if (remainingWaterTimes > 0) {
@@ -240,6 +326,24 @@ const Home = ({ navigation }) => {
       {selectedItem && <Image source={selectedItem.image} style={styles.backgroundImage} />}
       {rabbitLvl1 === 'Yes' && <Image source={require('../assets/images/rabbitlvl1home.png')} style={styles.rabbitImage1} />}
       {rabbitLvl2 === 'Yes' && <Image source={require('../assets/images/rabbitlvl2home.png')} style={styles.rabbitImage2} />}
+      {foxLvl1 === 'Yes' && <Image source={require('../assets/images/foxlvl1home.png')} style={styles.foxImage1} />}
+      {foxLvl2 === 'Yes' && <Image source={require('../assets/images/foxlvl2home.png')} style={styles.foxImage2} />}
+      {monkeyLvl1 === 'Yes' && <Image source={require('../assets/images/monkeylvl1home.png')} style={styles.monkeyImage1} />}
+      {monkeyLvl2 === 'Yes' && <Image source={require('../assets/images/monkeylvl2home.png')} style={styles.monkeyImage2} />}
+      {/* {elephantLvl1 === 'Yes' && <Image source={require('../assets/images/elephantlvl1home.png')} style={styles.elephantImage1} />}
+      {elephantLvl2 === 'Yes' && <Image source={require('../assets/images/elephantlvl2home.png')} style={styles.elephantImage2} />} */}
+      {horseLvl1 === 'Yes' && <Image source={require('../assets/images/horselvl1home.png')} style={styles.horseImage1} />}
+      {horseLvl2 === 'Yes' && <Image source={require('../assets/images/horselvl2home.png')} style={styles.horseImage2} />}
+      {wolfLvl1 === 'Yes' && <Image source={require('../assets/images/wolflvl1home.png')} style={styles.wolfImage1} />}
+      {wolfLvl2 === 'Yes' && <Image source={require('../assets/images/wolflvl2home.png')} style={styles.wolfImage2} />}
+      {/* {background3 === 'Yes' && <Image source={require('../assets/images/background3.png')} style={styles.backgroundImage3} />}
+      {background4 === 'Yes' && <Image source={require('../assets/images/background4.png')} style={styles.backgroundImage4} />}
+      {background5 === 'Yes' && <Image source={require('../assets/images/background5.png')} style={styles.backgroundImage5} />}
+      {background6 === 'Yes' && <Image source={require('../assets/images/background6.png')} style={styles.backgroundImage6} />} */}
+      {birdLvl1 === 'Yes' && <Image source={require('../assets/images/birdlvl1home.png')} style={styles.birdImage1} />}
+      {birdLvl2 === 'Yes' && <Image source={require('../assets/images/birdlvl2home.png')} style={styles.birdImage2} />}
+      {/* {background1 === 'Yes' && <Image source={require('../assets/images/background1.png')} style={styles.backgroundImage1} />}
+      {background2 === 'Yes' && <Image source={require('../assets/images/background2.png')} style={styles.backgroundImage2} />} */}
       <View style={styles.progressBarContainer}>
         <ProgressBarAnimated
           width={barWidth}
@@ -406,6 +510,127 @@ const styles = StyleSheet.create({
     bottom : 40,
     left : 300,
   },
+  foxImage1: {
+    width: '10%', // or any other size
+    height: '10%', // or any other size
+    position: 'absolute', // if you want it to be positioned absolutely
+    top : 500,
+    bottom : 40,
+    left : 100,
+  },
+  foxImage2: {
+    width: '10%', // or any other size
+    height: '10%', // or any other size
+    position: 'absolute', // if you want it to be positioned absolutely
+    top : 500,
+    bottom : 40,
+    left : 70,
+  },
+  birdImage1: {
+    width: '20%', // or any other size
+    height: '10%', // or any other size
+    position: 'absolute', // if you want it to be positioned absolutely
+    top : 265,
+    bottom : 40,
+    left : 310,
+  },
+  birdImage2: {
+    width: '20%', // or any other size
+    height: '10%', // or any other size
+    position: 'absolute', // if you want it to be positioned absolutely
+    top : 100,
+    bottom : 40,
+    left : 70,
+  },
+  monkeyImage1: {
+    width: '10%', // or any other size
+    height: '10%', // or any other size
+    position: 'absolute', // if you want it to be positioned absolutely
+    top : 520,
+    bottom : 40,
+    left : 340,
+  },
+  monkeyImage2: {
+    width: '10%', // or any other size
+    height: '10%', // or any other size
+    position: 'absolute', // if you want it to be positioned absolutely
+    top : 190,
+    bottom : 40,
+    left : 300,
+  },
+  // elephantImage1: {
+  //   width: '30%', // or any other size
+  //   height: '30%', // or any other size
+  //   position: 'absolute', // if you want it to be positioned absolutely
+  //   top : 480,
+  //   bottom : 40,
+  //   left : 130,
+  // },
+  // elephantImage2: {
+  //   width: '10%', // or any other size
+  //   height: '10%', // or any other size
+  //   position: 'absolute', // if you want it to be positioned absolutely
+  //   top : 500,
+  //   bottom : 40,
+  //   left : 70,
+  // },
+  horseImage1: {
+    width: '12%', // or any other size
+    height: '12%', // or any other size
+    position: 'absolute', // if you want it to be positioned absolutely
+    top : 450,
+    bottom : 40,
+    left : 22,
+  },
+  horseImage2: {
+    width: '18%', // or any other size
+    height: '18%', // or any other size
+    position: 'absolute', // if you want it to be positioned absolutely
+    top : 550,
+    bottom : 40,
+    left : 200,
+  },
+  wolfImage1: {
+    width: '10%', // or any other size
+    height: '10%', // or any other size
+    position: 'absolute', // if you want it to be positioned absolutely
+    top : 600,
+    bottom : 40,
+    left : 100,
+  },
+  wolfImage2: {
+    width: '10%', // or any other size
+    height: '10%', // or any other size
+    position: 'absolute', // if you want it to be positioned absolutely
+    top : 500,
+    bottom : 40,
+    left : 250,
+  },
+  // backgroundImage1: {
+  //   width: '100%', // or any other size
+  //   height: '100%', // or any other size
+  //   position: 'absolute', // if you want it to be positioned absolutely
+  // },
+  // backgroundImage2: {
+  //   width: '100%', // or any other size
+  //   height: '100%', // or any other size
+  //   position: 'absolute', // if you want it to be positioned absolutely
+  // },
+  // backgroundImage3: {
+  //   width: '100%', // or any other size
+  //   height: '100%', // or any other size
+  //   position: 'absolute', // if you want it to be positioned absolutely
+  // },
+  // backgroundImage4: {
+  //   width: '100%', // or any other size
+  //   height: '100%', // or any other size
+  //   position: 'absolute', // if you want it to be positioned absolutely
+  // },
+  // backgroundImage5: {
+  //   width: '100%', // or any other size
+  //   height: '100%', // or any other size
+  //   position: 'absolute', // if you want it to be positioned absolutely
+  // },
   remainingText: {
     fontFamily: 'AlegreyaSans-Black',
     fontSize: 16,

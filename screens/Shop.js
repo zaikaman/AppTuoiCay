@@ -91,12 +91,12 @@ const Shop = () => {
 
   const tabData = {
     background: [
-      { id: 1, price: '$10.00', description: 'Background 1', level: 1, progress: 50 },
-      { id: 2, price: '$10.00', description: 'Background 2', level: 2, progress: 75 },
-      { id: 3, price: '$20.00', description: 'Background 3', level: 3, progress: 3 },
-      { id: 4, price: '$25.00', description: 'Background 4', level: 4, progress: 90 },
-      { id: 5, price: '$30.00', description: 'Background 5', level: 5, progress: 40 },
-      { id: 6, price: '$35.00', description: 'Background 6', level: 6, progress: 35 },
+      { id: 25, price: '$10.00', description: 'Background 1', level: 1, progress: 50 },
+      { id: 26, price: '$10.00', description: 'Background 2', level: 2, progress: 75 },
+      { id: 27, price: '$20.00', description: 'Background 3', level: 3, progress: 3 },
+      { id: 28, price: '$25.00', description: 'Background 4', level: 4, progress: 90 },
+      { id: 29, price: '$30.00', description: 'Background 5', level: 5, progress: 40 },
+      { id: 30, price: '$35.00', description: 'Background 6', level: 6, progress: 35 },
     ],
     animals: [
       { id: 3, price: '$5.00', description: 'Rabbit lv1 :\n +1% watering perfomance', level: 1, progress: 88 },
@@ -107,22 +107,22 @@ const Shop = () => {
       { id: 8, price: '$30.00', description: 'Bird lv2 :\n +10% watering perfomance', level: 6, progress: 50 },
       { id: 9, price: '$70.00', description: 'Monkey lv1 :\n +13% watering perfomance', level: 11, progress: 52 }, 
       { id: 10, price: '$70.00', description: 'Monkey lv2 :\n +17% watering perfomance', level: 11, progress: 99 }, 
-      { id: 11, price: '$35.00', description: 'Elephant lv1 :\n +21% watering perfomance', level: 7, progress: 40 },
-      { id: 12, price: '$40.00', description: 'Elephant lv2 :\n +26% watering perfomance', level: 8, progress: 35 },      
+      // { id: 11, price: '$35.00', description: 'Elephant lv1 :\n +21% watering perfomance', level: 7, progress: 40 },
+      // { id: 12, price: '$40.00', description: 'Elephant lv2 :\n +26% watering perfomance', level: 8, progress: 35 },      
       { id: 13, price: '$50.00', description: 'Horse lv1 :\n +31% watering perfomance', level: 9, progress: 30 },      
       { id: 14, price: '$60.00', description: 'Horse lv2 :\n +37% watering perfomance', level: 10, progress: 20 },
       { id: 15, price: '$70.00', description: 'Wolf lv1 :\n +43% watering perfomance', level: 11, progress: 10 },      
       { id: 16, price: '$80.00', description: 'Wolf lv2 :\n +50% watering perfomance', level: 12, progress: 3 },
     ],
     decorations: [
-      { id: 5, price: '$12.00', description: 'Decoration 1', level: 1, progress: 40 },
-      { id: 6, price: '$18.00', description: 'Decoration 2', level: 2, progress: 70 },
-      { id: 7, price: '$18.00', description: 'Decoration 3', level: 2, progress: 70 },
-      { id: 8, price: '$18.00', description: 'Decoration 4', level: 2, progress: 70 },
-      { id: 9, price: '$18.00', description: 'Decoration 5', level: 2, progress: 70 },
-      { id: 10, price: '$18.00', description: 'Decoration 6', level: 2, progress: 70 },
-      { id: 11, price: '$18.00', description: 'Decoration 7', level: 2, progress: 70 },
-      { id: 12, price: '$18.00', description: 'Decoration 8', level: 2, progress: 70 },
+      { id: 17, price: '$12.00', description: 'Decoration 1', level: 1, progress: 40 },
+      { id: 18, price: '$18.00', description: 'Decoration 2', level: 2, progress: 70 },
+      { id: 19, price: '$18.00', description: 'Decoration 3', level: 2, progress: 70 },
+      { id: 20, price: '$18.00', description: 'Decoration 4', level: 2, progress: 70 },
+      { id: 21, price: '$18.00', description: 'Decoration 5', level: 2, progress: 70 },
+      { id: 22, price: '$18.00', description: 'Decoration 6', level: 2, progress: 70 },
+      { id: 23, price: '$18.00', description: 'Decoration 7', level: 2, progress: 70 },
+      { id: 24, price: '$18.00', description: 'Decoration 8', level: 2, progress: 70 },
     ],
   };
 
@@ -131,19 +131,76 @@ const Shop = () => {
       const userData = await getUserData(auth.currentUser.uid);
       let newAcceptedItems = { ...acceptedItems };
   
+      // Animals
       if (userData.Rabbitlvl1Applied === 'Yes') {
-        newAcceptedItems[3] = { tab: 'animals', accepted: true }; // 3 is the id of rabbitlvl1
+        newAcceptedItems[3] = { tab: 'animals', accepted: true };
+      }
+      if (userData.Rabbitlvl2Applied === 'Yes') {
+        newAcceptedItems[4] = { tab: 'animals', accepted: true };
+      }
+      if (userData.Foxlvl1Applied === 'Yes') {
+        newAcceptedItems[5] = { tab: 'animals', accepted: true };
+      }
+      if (userData.Foxlvl2Applied === 'Yes') {
+        newAcceptedItems[6] = { tab: 'animals', accepted: true };
+      }
+      if (userData.Birdlvl1Applied === 'Yes') {
+        newAcceptedItems[7] = { tab: 'animals', accepted: true };
+      }
+      if (userData.Birdlvl2Applied === 'Yes') {
+        newAcceptedItems[8] = { tab: 'animals', accepted: true };
+      }
+      if (userData.Monkeylvl1Applied === 'Yes') {
+        newAcceptedItems[9] = { tab: 'animals', accepted: true };
+      }
+      if (userData.Monkeylvl2Applied === 'Yes') {
+        newAcceptedItems[10] = { tab: 'animals', accepted: true };
+      }
+      // if (userData.Elephantlvl1Applied === 'Yes') {
+      //   newAcceptedItems[11] = { tab: 'animals', accepted: true };
+      // }
+      // if (userData.Elephantlvl2Applied === 'Yes') {
+      //   newAcceptedItems[12] = { tab: 'animals', accepted: true };
+      // }
+      if (userData.Horselvl1Applied === 'Yes') {
+        newAcceptedItems[13] = { tab: 'animals', accepted: true };
+      }
+      if (userData.Horselvl2Applied === 'Yes') {
+        newAcceptedItems[14] = { tab: 'animals', accepted: true };
+      }
+      if (userData.Wolflvl1Applied === 'Yes') {
+        newAcceptedItems[15] = { tab: 'animals', accepted: true };
+      }
+      if (userData.Horselvl2Applied === 'Yes') {
+        newAcceptedItems[16] = { tab: 'animals', accepted: true };
       }
   
-      if (userData.Rabbitlvl2Applied === 'Yes') {
-        newAcceptedItems[4] = { tab: 'animals', accepted: true }; // 4 is the id of rabbitlvl2
+      // Backgrounds
+      if (userData.Background1Applied === 'Yes') {
+        newAcceptedItems[25] = { tab: 'background', accepted: true };
       }
+      if (userData.Background2Applied === 'Yes') {
+        newAcceptedItems[26] = { tab: 'background', accepted: true };
+      }
+      if (userData.Background3Applied === 'Yes') {
+        newAcceptedItems[27] = { tab: 'background', accepted: true };
+      }
+      if (userData.Background4Applied === 'Yes') {
+        newAcceptedItems[28] = { tab: 'background', accepted: true };
+      }
+      if (userData.Background5Applied === 'Yes') {
+        newAcceptedItems[29] = { tab: 'background', accepted: true };
+      }
+      if (userData.Background6Applied === 'Yes') {
+        newAcceptedItems[30] = { tab: 'background', accepted: true };
+      }
+      // Add similar blocks for other backgrounds here...
   
       setAcceptedItems(newAcceptedItems);
     };
   
     fetchData();
-  }, []);  
+  }, []);   
 
   const renderTabs = () => (
     <FlatList
@@ -166,11 +223,28 @@ const Shop = () => {
     />
   );
 
-  // Mapping between item.id and the corresponding field in the database
+// Mapping between item.id and the corresponding field in the database
 const idToField = {
   3: 'Rabbitlvl1',
   4: 'Rabbitlvl2',
-  // Add more mappings here as needed
+  5: 'Foxlvl1',
+  6: 'Foxlvl2',
+  7: 'Birdlvl1',
+  8: 'Birdlvl2',
+  9: 'Monkeylvl1',
+  10: 'Monkeylvl2',
+  // 11: 'Elephantlvl1',
+  // 12: 'Elephantlvl2',
+  13: 'Horselvl1',
+  14: 'Horselvl2',
+  15: 'Wolflvl1',
+  16: 'Wolflvl2',
+  25: 'Background1',
+  26: 'Background2',
+  27: 'Background3',
+  28: 'Background4',
+  29: 'Background5',
+  30: 'Background6'
 };
 
 const onToggleAccept = async (item) => {
@@ -187,10 +261,9 @@ const onToggleAccept = async (item) => {
   newAcceptedItems[activeTab] = newAcceptedItems[activeTab] === item.id ? undefined : item.id;
 
   // Update the database
-  if (activeTab === 'animals') {
-    const level = item.id === 3 ? '1' : '2';
+  if (idToField[item.id]) {
     const applied = newAcceptedItems[item.id].accepted ? 'Yes' : 'No';
-    await updateUserData(auth.currentUser.uid, { [`Rabbitlvl${level}Applied`]: applied });
+    await updateUserData(auth.currentUser.uid, { [`${idToField[item.id]}Applied`]: applied });
   }
 
   // Update the selected item and the accepted items
@@ -215,7 +288,6 @@ const onToggleAccept = async (item) => {
         <Image source={require("../assets/images/shop2.png")} style={styles.shopIcon} />
         {renderTabs()}
       </View>
-      <ScrollView>
         <View style={styles.container}>
           <FlatList
             data={tabData[activeTab]}
@@ -225,7 +297,6 @@ const onToggleAccept = async (item) => {
             contentContainerStyle={styles.itemsContainer}
           />
         </View>
-      </ScrollView>
     </SafeAreaView>
   );
 };
