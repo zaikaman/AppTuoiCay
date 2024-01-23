@@ -30,7 +30,7 @@ const oneTurn = 360;
 const angleBySegment = oneTurn / numberOfSegments;
 const angleOffset = angleBySegment / 2;
 const knobFill = color({ hue: 'purple' });
-const wheelNumbers = [0.001, 0.002, 0.003, 0.004, 0.005, 0.05, 0.1, 0.25, 0.5, "1 FREE SPIN"];
+const wheelNumbers = [0.001, 0.002, 0.003, 0.004, 0.005, 0.01, 0.05, 0.1, 0.25, "1 FREE SPIN"];
 const displayNumbers = ["🔁", "🔁", "🔁", "🔁", "🔁", "🔁", "🔁", "🔁", "🔁", "🔁"];
 
 const makeWheel = () => {
