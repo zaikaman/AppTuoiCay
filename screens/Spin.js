@@ -119,6 +119,8 @@ class Spin extends React.Component {
     // Nếu winner thay đổi, cập nhật totalWatered và spinsLeft
     if (prevState.winner !== this.state.winner) {
       const prize = this.state.winner;
+      let message = `You have won ${prize}!`;
+  
       // Nếu người chơi thắng một lượt quay miễn phí
       if (prize === "1 FREE SPIN") {
         this.setState(prevState => ({ spinsLeft: prevState.spinsLeft + 1 }), () => {
@@ -128,6 +130,7 @@ class Spin extends React.Component {
       } else {
         // If the player wins a prize other than a free spin
         if (!isNaN(prize)) {
+          message = `You have won ${prize} $MTREE!`;
           this.setState(prevState => ({ 
             totalWatered: prevState.totalWatered + prize,
             spinsLeft: prevState.spinsLeft - 1 // Decrease spinsLeft by 1
@@ -140,8 +143,11 @@ class Spin extends React.Component {
           });          
         }
       }
+  
+      // Show the alert
+      Alert.alert("Congratulations!", message);
     }
-  }    
+  }      
 
   _getWinnerIndex = () => {
     const deg = Math.abs(Math.round(this.angle % oneTurn));
@@ -235,7 +241,7 @@ class Spin extends React.Component {
             <RNText style={styles.addSpinsText}>Add More Spins</RNText>
           </TouchableOpacity>
           <RNText style={styles.totalWatered}>
-            💰 {typeof this.state.totalWatered === 'number' ? this.state.totalWatered.toFixed(4) : this.state.totalWatered}
+            🌳 {typeof this.state.totalWatered === 'number' ? this.state.totalWatered.toFixed(4) : this.state.totalWatered}
           </RNText>
           <RNText style={styles.spinsLeft}>🔁 {this.state.spinsLeft}</RNText> 
           {this._renderSvgWheel()}
@@ -303,14 +309,14 @@ class Spin extends React.Component {
     
     // Nếu winner là số, thêm biểu tượng 💰 vào thông báo
     if (isNumber) {
-      message = `You have won 💰${this.state.winner}!`;
+      message = `You have won ${this.state.winner} $MTREE!`;
     }
   
-    return (
-      <RNText style={styles.winnerText}>
-        {message}
-      </RNText>
-    );
+    // return (
+    //   <RNText style={styles.winnerText}>
+    //     {message}
+    //   </RNText>
+    // );
   };  
 
   _renderSvgWheel = () => {
@@ -409,12 +415,14 @@ const styles = StyleSheet.create({
     right: 10,
     fontSize: 20,
   },
-  winnerText: {
-    fontSize: 32,
-    fontFamily: 'System',
-    position: 'absolute',
-    top : 680,
-  },
+  // winnerText: {
+  //   fontSize: 32,
+  //   fontFamily: 'System',
+  //   position: 'absolute',
+  //   top : 680,
+  //   alignItems: 'center',
+  //   justifyContent: 'center',
+  // },
   goBackButton: {
     position: 'absolute',
     top: 30,
