@@ -37,15 +37,10 @@ const displayNumbers = ["🔁", "🔁", "🔁", "🔁", "🔁", "🔁", "🔁", 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 
-const adsButtonPosition = {
-  top: screenHeight * 0.43, 
-  left: screenWidth * 0.01, 
-};
-
-const moreSpinsImagePosition = {
-  top: screenHeight * 0.815, 
-  left: screenWidth * 0.1,
-}
+// const adsButtonPosition = {
+//   top: screenHeight * 0.43, 
+//   left: screenWidth * 0.01, 
+// };
 
 const makeWheel = () => {
   const data = Array.from({ length: numberOfSegments }).fill(1);
@@ -244,15 +239,15 @@ class Spin extends React.Component {
               style={styles.backImage}
             />
           </TouchableOpacity>
-          <Image 
+          {/* <Image 
             source={require('../assets/images/morespins.png')} 
             style={styles.moreSpinsImage} // Use the style you defined
-          />
+          /> */}
           <Image 
             source={require('../assets/images/spintext.png')} 
             style={styles.spinTextImage} // Định nghĩa style cho hình ảnh
           />
-          <TouchableOpacity 
+          {/* <TouchableOpacity 
             style={styles.addSpinsButton}
             onPress={this.addMoreSpins}
           >
@@ -260,7 +255,7 @@ class Spin extends React.Component {
               source={require('../assets/images/ads.png')} 
               style={styles.addSpinsButton} // Use the same style as your TouchableOpacity
             />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
           <RNText style={styles.totalWatered}>
             🌳 {typeof this.state.totalWatered === 'number' ? this.state.totalWatered.toFixed(4) : this.state.totalWatered}
           </RNText>
@@ -414,14 +409,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  addSpinsButton: {
-    position: 'absolute',
-    top : adsButtonPosition.top,
-    left: adsButtonPosition.left,
-    // Add dimensions for your image if necessary
-    width: 70, // Adjust to the width of your image
-    height: 70, // Adjust to the height of your image
-  },  
+  // addSpinsButton: {
+  //   position: 'absolute',
+  //   top : adsButtonPosition.top,
+  //   left: adsButtonPosition.left,
+  //   // Add dimensions for your image if necessary
+  //   width: 70, // Adjust to the width of your image
+  //   height: 70, // Adjust to the height of your image
+  // },  
   addSpinsText: {
     fontSize: 18, // Điều chỉnh kích thước chữ
     color: '#000', // Điều chỉnh màu chữ
@@ -453,14 +448,14 @@ const styles = StyleSheet.create({
     left: 0,
     margin: 10, // Điều chỉnh khoảng cách từ góc màn hình
   },
-  moreSpinsImage: {
-    position: 'absolute',
-    top : moreSpinsImagePosition.top,
-    left : moreSpinsImagePosition.left,
-    // Add dimensions for your image if necessary
-    width: 250, // Adjust to the width of your image
-    height: 150, // Adjust to the height of your image
-  },
+  // moreSpinsImage: {
+  //   position: 'absolute',
+  //   top : moreSpinsImagePosition.top,
+  //   left : moreSpinsImagePosition.left,
+  //   // Add dimensions for your image if necessary
+  //   width: 250, // Adjust to the width of your image
+  //   height: 150, // Adjust to the height of your image
+  // },
   backImage: {
     width: 50, // Điều chỉnh kích thước hình ảnh
     height: 50, // Điều chỉnh kích thước hình ảnh
