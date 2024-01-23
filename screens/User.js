@@ -6,11 +6,12 @@ import {
   ScrollView,
   Image,
   TextInput,
-  Modal,
+  Dimensions,
+  Button,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS, FONTS } from "../constants";
-import { MaterialIcons } from "@expo/vector-icons";
+import { MaterialIcons, FontAwesome5 } from "@expo/vector-icons";
 import { getDatabase, ref, onValue, update } from "firebase/database";
 import { getFirebaseApp } from "../utils/firebaseHelper";
 import { getAuth } from "firebase/auth";
@@ -18,6 +19,8 @@ import { getStorage } from "firebase/storage";
 import { ref as sRef, put } from "firebase/storage";
 import DatePicker, { getFormatedDate } from "react-native-modern-datepicker";
 import * as ImagePicker from 'expo-image-picker';
+import Modal from 'react-native-modal';
+import AddFr from "./AddFr";
 
 const profileImages = [
   require("../assets/images/image1.png"),
@@ -126,6 +129,14 @@ const EditProfile = ({ navigation }) => {
     }
   }
 
+  // Modal FriendList
+  const [modalVisible, setModalVisible] = useState(false)
+  const windowWidth = Dimensions.get('window').width;
+  const windowHeight = Dimensions.get('window').height;
+  const openFriendList = () => {
+    setModalVisible(true)
+  }
+
   function renderDatePicker() {
     return (
       <Modal
@@ -213,7 +224,6 @@ const EditProfile = ({ navigation }) => {
             color={COLORS.black}
           />
         </TouchableOpacity>
-
         <Text style={{ ...FONTS.h3 }}>Edit Profile</Text>
       </View>
       <ScrollView style={{ padding: 10 }}>
@@ -429,7 +439,36 @@ const EditProfile = ({ navigation }) => {
           </Text>
         </TouchableOpacity>
 
-        {renderDatePicker()}
+        <View style = {{marginTop : 40}}>
+            <TouchableOpacity 
+                onPress = {openFriendList}
+                style = {{ width : 40}}
+            >
+              <FontAwesome5 
+                name = "user-friends"
+                size = {30}
+                color = {COLORS.black}
+              />
+            </TouchableOpacity>
+        </View>
+
+
+        <Modal
+          animationType="fade"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => {
+            setModalVisible(!modalVisible);
+          }}
+          onBackdropPress={() => setModalVisible(false)}
+          style={{ flex : 1, justifyContent : 'flex-start' }}
+        >
+          <View style={{ width: windowWidth * 1.5 / 3, height : (windowHeight), position : 'absolute', bottom : 0, left : -20, backgroundColor: COLORS.primary , paddingTop : 100 , alignItems : "center"}}>
+              <Text style = {{ ...FONTS.h1 }}>List Friend</Text>
+              <View style = {{marginTop : 10}}><AddFr/></View>
+          </View>
+        </Modal>      
+         {renderDatePicker()}
       </ScrollView>
     </SafeAreaView>
   );
