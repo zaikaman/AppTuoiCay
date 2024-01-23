@@ -47,6 +47,11 @@ const spinButtonPosition = {
   right: screenWidth * -0.455, // 5% từ cạnh phải màn hình
 };
 
+const adsButtonPosition = {
+  top: screenHeight * 0.1, 
+  left: screenWidth * 0.377, 
+};
+
 const Home = ({ navigation }) => {
   const [rabbitLvl1, setRabbitLvl1] = useState('No');
   const [rabbitLvl2, setRabbitLvl2] = useState('No');
@@ -77,6 +82,7 @@ const Home = ({ navigation }) => {
   const [remainingWaterTimes, setRemainingWaterTimes] = useState(10000);
   const [modalVisible, setModalVisible] = useState(false);
   const [isMusicPlaying, setIsMusicPlaying] = useState(false);
+  const [spinsLeft, setSpinsLeft] = useState(0);
   const [waterAmount, setWaterAmount] = useState(0.001); // Initialize waterAmount state variable
   const auth = getAuth();
 
@@ -310,6 +316,34 @@ const Home = ({ navigation }) => {
     }
   };  
 
+  const addMoreSpins = async () => {
+    // Hiển thị hộp thoại xác nhận
+    Alert.alert(
+      "Free Spin",
+      "Do you want to watch an ad for a free spin?",
+      [
+        {
+          text: "No",
+          onPress: () => console.log("Cancel Pressed"),
+          style: "cancel"
+        },
+        {
+          text: "Yes", 
+          onPress: async () => {
+            // Cập nhật trạng thái spinsLeft
+            setSpinsLeft(spinsLeft + 1);
+          
+            // Cập nhật spinsLeft trong cơ sở dữ liệu
+            await updateUserData(auth.currentUser.uid, { spinsLeft: spinsLeft + 1 });
+  
+            // Hiển thị thông báo
+            Alert.alert("Success", "A free spin has been added!");
+          }
+        }
+      ]
+    );
+  };    
+
   const signOutAlert = () => {
     Alert.alert(
       'Sign Out',
@@ -409,6 +443,15 @@ const Home = ({ navigation }) => {
       </TouchableOpacity>
       <TouchableOpacity onPress={vipButtonAlert}>
         <Image source={require('../assets/images/vip.png')} style={styles.vipButton} />
+      </TouchableOpacity>
+      <TouchableOpacity 
+        style={styles.addSpinsButton}
+        onPress={addMoreSpins}
+      >
+        <Image 
+          source={require('../assets/images/ads.png')} 
+          style={styles.addSpinsButton} // Use the same style as your TouchableOpacity
+        />
       </TouchableOpacity>
       <Modal
         animationType="slide"
@@ -675,6 +718,14 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom : 8
   },
+   addSpinsButton: {
+     position: 'absolute',
+     top : adsButtonPosition.top,
+     left: adsButtonPosition.left,
+     // Add dimensions for your image if necessary
+     width: 80, // Adjust to the width of your image
+     height: 80, // Adjust to the height of your image
+   },
   tree: {
     position: 'absolute',
   },
