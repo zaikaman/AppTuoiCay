@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions, FlatList, ScrollView } from 'react-native';
+import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions, FlatList } from 'react-native';
 import ProgressBarAnimated from 'react-native-progress-bar-animated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 // Import images
@@ -24,7 +24,6 @@ import background4 from '../assets/images/background4.png';
 import background5 from '../assets/images/background5.png';
 import background6 from '../assets/images/background6.png';
 import waiting from '../assets/images/waiting.png';
-import defaultImage from '../assets/images/x.png';
 import { ShopContext } from './ShopContext';
 import { getUserData, updateUserData } from '../utils/actions/userActions';
 import { getAuth } from 'firebase/auth';
@@ -91,39 +90,39 @@ const Shop = () => {
 
   const tabData = {
     background: [
-      { id: 25, price: '$10.00', description: 'Background 1', level: 1, progress: 50 },
-      { id: 26, price: '$10.00', description: 'Background 2', level: 2, progress: 75 },
-      { id: 27, price: '$20.00', description: 'Background 3', level: 3, progress: 3 },
-      { id: 28, price: '$25.00', description: 'Background 4', level: 4, progress: 90 },
-      { id: 29, price: '$30.00', description: 'Background 5', level: 5, progress: 40 },
-      { id: 30, price: '$35.00', description: 'Background 6', level: 6, progress: 35 },
+      { id: 25, price: '10.00 $MTREE', description: 'Background 1', level: 1, progress: 50 },
+      { id: 26, price: '10.00 $MTREE', description: 'Background 2', level: 2, progress: 75 },
+      { id: 27, price: '20.00 $MTREE', description: 'Background 3', level: 3, progress: 3 },
+      { id: 28, price: '25.00 $MTREE', description: 'Background 4', level: 4, progress: 90 },
+      { id: 29, price: '30.00 $MTREE', description: 'Background 5', level: 5, progress: 40 },
+      { id: 30, price: '35.00 $MTREE', description: 'Background 6', level: 6, progress: 35 },
     ],
     animals: [
-      { id: 3, price: '$2.50', description: 'Rabbit lv1 :\n +1% watering perfomance', level: 1, progress: 88 },
-      { id: 4, price: '$5.00', description: 'Rabbit lv2 :\n +2% watering perfomance', level: 1, progress: 80 },
-      { id: 5, price: '$7.50', description: 'Fox lv1 :\n +3% watering perfomance', level: 3, progress: 75 },
-      { id: 6, price: '$12.00', description: 'Fox lv2 :\n +5% watering perfomance', level: 4, progress: 69 },
-      { id: 7, price: '$15.00', description: 'Bird lv1 :\n +7% watering perfomance', level: 5, progress: 65 },
-      { id: 8, price: '$25.00', description: 'Bird lv2 :\n +10% watering perfomance', level: 6, progress: 50 },
-      { id: 9, price: '$28.00', description: 'Monkey lv1 :\n +13% watering perfomance', level: 11, progress: 52 }, 
-      { id: 10, price: '$35.00', description: 'Monkey lv2 :\n +17% watering perfomance', level: 11, progress: 99 },     
-      { id: 13, price: '$50.00', description: 'Horse lv1 :\n +31% watering perfomance', level: 9, progress: 30 },      
-      { id: 14, price: '$55.00', description: 'Horse lv2 :\n +37% watering perfomance', level: 10, progress: 20 },
-      { id: 15, price: '$70.00', description: 'Wolf lv1 :\n +43% watering perfomance', level: 11, progress: 10 },      
-      { id: 16, price: '$80.00', description: 'Wolf lv2 :\n +50% watering perfomance', level: 12, progress: 3 },
+      { id: 3, price: '2.50 $MTREE', description: 'Rabbit lv1 :\n +1% watering perfomance', level: 1, progress: 88 },
+      { id: 4, price: '5.00 $MTREE', description: 'Rabbit lv2 :\n +2% watering perfomance', level: 1, progress: 80 },
+      { id: 5, price: '7.50 $MTREE', description: 'Fox lv1 :\n +3% watering perfomance', level: 3, progress: 75 },
+      { id: 6, price: '12.00 $MTREE', description: 'Fox lv2 :\n +5% watering perfomance', level: 4, progress: 69 },
+      { id: 7, price: '15.00 $MTREE', description: 'Bird lv1 :\n +7% watering perfomance', level: 5, progress: 65 },
+      { id: 8, price: '25.00 $MTREE', description: 'Bird lv2 :\n +10% watering perfomance', level: 6, progress: 50 },
+      { id: 9, price: '28.00 $MTREE', description: 'Monkey lv1 :\n +13% watering perfomance', level: 11, progress: 52 }, 
+      { id: 10, price: '35.00 $MTREE', description: 'Monkey lv2 :\n +17% watering perfomance', level: 11, progress: 99 },     
+      { id: 13, price: '50.00 $MTREE', description: 'Horse lv1 :\n +31% watering perfomance', level: 9, progress: 30 },      
+      { id: 14, price: '55.00 $MTREE', description: 'Horse lv2 :\n +37% watering perfomance', level: 10, progress: 20 },
+      { id: 15, price: '70.00 $MTREE', description: 'Wolf lv1 :\n +43% watering perfomance', level: 11, progress: 10 },      
+      { id: 16, price: '80.00 $MTREE', description: 'Wolf lv2 :\n +50% watering perfomance', level: 12, progress: 3 },
     ],
     decorations: [
-      { id: 17, price: '$12.00', description: 'Decoration 1', level: 1, progress: 40 },
-      { id: 18, price: '$18.00', description: 'Decoration 2', level: 2, progress: 70 },
-      { id: 19, price: '$18.00', description: 'Decoration 3', level: 2, progress: 70 },
-      { id: 20, price: '$18.00', description: 'Decoration 4', level: 2, progress: 70 },
-      { id: 21, price: '$18.00', description: 'Decoration 5', level: 2, progress: 70 },
-      { id: 22, price: '$18.00', description: 'Decoration 6', level: 2, progress: 70 },
-      { id: 23, price: '$18.00', description: 'Decoration 7', level: 2, progress: 70 },
-      { id: 24, price: '$18.00', description: 'Decoration 8', level: 2, progress: 70 },
+      { id: 17, price: '12.00 $MTREE', description: 'Decoration 1', level: 1, progress: 40 },
+      { id: 18, price: '18.00 $MTREE', description: 'Decoration 2', level: 2, progress: 70 },
+      { id: 19, price: '18.00 $MTREE', description: 'Decoration 3', level: 2, progress: 70 },
+      { id: 20, price: '18.00 $MTREE', description: 'Decoration 4', level: 2, progress: 70 },
+      { id: 21, price: '18.00 $MTREE', description: 'Decoration 5', level: 2, progress: 70 },
+      { id: 22, price: '18.00 $MTREE', description: 'Decoration 6', level: 2, progress: 70 },
+      { id: 23, price: '18.00 $MTREE', description: 'Decoration 7', level: 2, progress: 70 },
+      { id: 24, price: '18.00 $MTREE', description: 'Decoration 8', level: 2, progress: 70 },
     ],
   };
-
+  
   useEffect(() => {
     const fetchData = async () => {
       const userData = await getUserData(auth.currentUser.uid);
@@ -287,12 +286,13 @@ const onToggleAccept = async (item) => {
         {renderTabs()}
       </View>
         <View style={styles.container}>
-          <FlatList
+        <FlatList
             data={tabData[activeTab]}
             renderItem={renderItem}
             keyExtractor={(item) => item.id.toString()}
             numColumns={2}
             contentContainerStyle={styles.itemsContainer}
+            ListFooterComponent={<View style={{ height: 350 }} />} // Thêm dòng này
           />
         </View>
     </SafeAreaView>
