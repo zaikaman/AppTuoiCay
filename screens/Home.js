@@ -389,7 +389,7 @@ const Home = ({ navigation }) => {
           backgroundColorOnComplete="#6CC644"
           useNativeDriver={false}
         />
-        {fontLoaded && <Text style={{ ...styles.moneyEarned, color: 'yellow' }}>💰 {(totalWatered || 0).toFixed(4)}</Text>}
+        {fontLoaded && <Text style={{ ...styles.moneyEarned, color: 'yellow' }}>🌳 {(totalWatered || 0).toFixed(4)}</Text>}
       </View>
       <View style={styles.remainingContainer}>
         {fontLoaded && <Text style={{ ...styles.remainingText, color: 'yellow' }}>💧 {remainingWaterTimes}</Text>}
