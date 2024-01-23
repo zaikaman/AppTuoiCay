@@ -113,6 +113,7 @@ const Home = ({ navigation }) => {
       setTreeSize(userData.treeSize || sizes[0]);
       setTreePosition(userData.treePosition || positions[0]);
       setWaterAmount(userData.waterAmount);
+      setSpinsLeft(userData.spinsLeft);
     };
 
     fetchUserData();
@@ -124,9 +125,10 @@ const Home = ({ navigation }) => {
       totalWatered,
       treeSize,
       treePosition,
-      waterAmount
+      waterAmount,
+      spinsLeft,
     });
-  }, [treeStage, totalWatered, treeSize, treePosition, waterAmount]);
+  }, [treeStage, totalWatered, treeSize, treePosition, waterAmount, spinsLeft]);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -330,19 +332,19 @@ const Home = ({ navigation }) => {
         {
           text: "Yes", 
           onPress: async () => {
-            // Cập nhật trạng thái spinsLeft
-            setSpinsLeft(spinsLeft + 1);
-          
             // Cập nhật spinsLeft trong cơ sở dữ liệu
             await updateUserData(auth.currentUser.uid, { spinsLeft: spinsLeft + 1 });
   
+            // Cập nhật trạng thái spinsLeft
+            setSpinsLeft(spinsLeft + 1);
+          
             // Hiển thị thông báo
             Alert.alert("Success", "A free spin has been added!");
           }
         }
       ]
     );
-  };    
+  };      
 
   const signOutAlert = () => {
     Alert.alert(
