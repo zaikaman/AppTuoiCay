@@ -33,6 +33,20 @@ const knobFill = color({ hue: 'purple' });
 const wheelNumbers = [0.001, 0.002, 0.003, 0.004, 0.005, 0.05, 0.1, 0.2, 0.5, "1 FREE SPIN"];
 const displayNumbers = ["🔁", "🔁", "🔁", "🔁", "🔁", "🔁", "🔁", "🔁", "🔁", "🔁"];
 
+// Get the screen dimensions
+const screenWidth = Dimensions.get('window').width;
+const screenHeight = Dimensions.get('window').height;
+
+const adsButtonPosition = {
+  top: screenHeight * 0.43, 
+  left: screenWidth * 0.01, 
+};
+
+const moreSpinsImagePosition = {
+  top: screenHeight * 0.815, 
+  left: screenWidth * 0.1,
+}
+
 const makeWheel = () => {
   const data = Array.from({ length: numberOfSegments }).fill(1);
   const arcs = d3Shape.pie()(data);
@@ -402,8 +416,8 @@ const styles = StyleSheet.create({
   },
   addSpinsButton: {
     position: 'absolute',
-    bottom: 10,
-    left: 10,
+    top : adsButtonPosition.top,
+    left: adsButtonPosition.left,
     // Add dimensions for your image if necessary
     width: 70, // Adjust to the width of your image
     height: 70, // Adjust to the height of your image
@@ -441,8 +455,8 @@ const styles = StyleSheet.create({
   },
   moreSpinsImage: {
     position: 'absolute',
-    bottom: -25,
-    right: 80,
+    top : moreSpinsImagePosition.top,
+    left : moreSpinsImagePosition.left,
     // Add dimensions for your image if necessary
     width: 250, // Adjust to the width of your image
     height: 150, // Adjust to the height of your image
