@@ -77,6 +77,7 @@ const Home = ({ navigation }) => {
   const [remainingWaterTimes, setRemainingWaterTimes] = useState(10000);
   const [modalVisible, setModalVisible] = useState(false);
   const [isMusicPlaying, setIsMusicPlaying] = useState(false);
+  const [waterAmount, setWaterAmount] = useState(0.001); // Initialize waterAmount state variable
   const auth = getAuth();
 
   useEffect(() => {
@@ -105,6 +106,7 @@ const Home = ({ navigation }) => {
       setRemainingWaterTimes(userData.remainingWaterTimes || 10000);
       setTreeSize(userData.treeSize || sizes[0]);
       setTreePosition(userData.treePosition || positions[0]);
+      setWaterAmount(userData.waterAmount);
     };
 
     fetchUserData();
@@ -116,8 +118,9 @@ const Home = ({ navigation }) => {
       totalWatered,
       treeSize,
       treePosition,
+      waterAmount
     });
-  }, [treeStage, totalWatered, treeSize, treePosition]);
+  }, [treeStage, totalWatered, treeSize, treePosition, waterAmount]);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -203,6 +206,21 @@ const Home = ({ navigation }) => {
     };
   }, []);
 
+  const animals = [
+    { name: 'Rabbitlvl1', increase: 0.01 },
+    { name: 'Rabbitlvl2', increase: 0.02 },
+    { name: 'Foxlvl1', increase: 0.03 },
+    { name: 'Foxlvl2', increase: 0.05 },
+    { name: 'Birdlvl1', increase: 0.07 },
+    { name: 'Birdlvl2', increase: 0.10 },
+    { name: 'Monkeylvl1', increase: 0.13 },
+    { name: 'Monkeylvl2', increase: 0.17 },
+    { name: 'Horselvl1', increase: 0.31 },
+    { name: 'Horselvl2', increase: 0.37 },
+    { name: 'Wolflvl1', increase: 0.43 },
+    { name: 'Wolflvl2', increase: 0.50 },
+  ];  
+
   const setFieldState = (field, value) => {
     switch(field) {
       case 'Rabbitlvl1':
@@ -252,25 +270,45 @@ const Home = ({ navigation }) => {
     }
   };  
 
-  const waterTree = () => {
-    if (remainingWaterTimes > 0) {
-      let waterAmount = treeStage === 0 ? 1 : 0.1;
-      let newTotal = totalWatered + waterAmount;
-      setTotalWatered(newTotal);
-
-      if (newTotal >= treeStage + 1 && treeStage < stages.length - 1) {
-        let newTreeStage = treeStage + 1;
-        setTreeStage(newTreeStage);
-        setTreeSize(sizes[newTreeStage]);
-        setTreePosition(positions[newTreeStage]);
+  const waterTree = async () => {
+    if (auth.currentUser) {
+      const userData = await getUserData(auth.currentUser.uid);
+  
+      if (remainingWaterTimes > 0) {
+        let newWaterAmount = waterAmount; // Sử dụng biến mới để không làm thay đổi trạng thái trực tiếp
+  
+        // Loop through the animals array and check if each animal has been applied
+        for (let animal of animals) {
+          if (newWaterAmount >= 0.0039) { // Nếu waterAmount lớn hơn hoặc bằng 0.0039, dừng vòng lặp
+            break;
+          }
+        
+          if (userData[`${animal.name}Applied`] === 'Yes') {
+            newWaterAmount += newWaterAmount * animal.increase;
+          }
+        }
+        
+        let newTotal = totalWatered + newWaterAmount;
+        setTotalWatered(newTotal);
+  
+        if (newTotal >= treeStage + 1 && treeStage < stages.length - 1) {
+          let newTreeStage = treeStage + 1;
+          setTreeStage(newTreeStage);
+          setTreeSize(sizes[newTreeStage]);
+          setTreePosition(positions[newTreeStage]);
+        }
+  
+        setRemainingWaterTimes(remainingWaterTimes - 1);
+        setWaterAmount(newWaterAmount); // Cập nhật trạng thái waterAmount
+        updateUserData(auth.currentUser.uid, {
+          remainingWaterTimes: remainingWaterTimes - 1,
+          waterAmount: newWaterAmount, // Update the waterAmount field in the database
+        });
       }
-
-      setRemainingWaterTimes(remainingWaterTimes - 1);
-      updateUserData(auth.currentUser.uid, {
-        remainingWaterTimes: remainingWaterTimes - 1,
-      });
+    } else {
+      console.log('User is not logged in');
     }
-  };
+  };  
 
   const signOutAlert = () => {
     Alert.alert(
@@ -355,6 +393,7 @@ const Home = ({ navigation }) => {
       </View>
       <View style={styles.remainingContainer}>
         {fontLoaded && <Text style={{ ...styles.remainingText, color: 'yellow' }}>💧 {remainingWaterTimes}</Text>}
+        {fontLoaded && <Text style={{ ...styles.remainingText, color: 'yellow' }}>⚡ {waterAmount.toFixed(4)}</Text>}
       </View>
       <TouchableOpacity style={styles.buttonContainer} onPress={waterTree}>
         <Image source={require('../assets/images/water.png')} style={styles.waterImage} />
@@ -484,8 +523,8 @@ const styles = StyleSheet.create({
   },
   remainingContainer: {
     position: 'absolute',
-    right: 25,
-    bottom: 90,
+    right: 20,
+    bottom: 100,
   },
   spinButton: {
     width: 80, 
@@ -634,7 +673,7 @@ const styles = StyleSheet.create({
   remainingText: {
     fontFamily: 'AlegreyaSans-Black',
     fontSize: 16,
-    marginBottom : 30
+    marginBottom : 8
   },
   tree: {
     position: 'absolute',
@@ -699,7 +738,12 @@ const styles = StyleSheet.create({
   signOutImage: {
     width: 30,
     height: 30,
-  } ,
+  },
+  waterAmount: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: 'blue',
+  },
   modal : {
     positions : 'absolute',
     top : 240, 
