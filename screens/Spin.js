@@ -30,7 +30,7 @@ const oneTurn = 360;
 const angleBySegment = oneTurn / numberOfSegments;
 const angleOffset = angleBySegment / 2;
 const knobFill = color({ hue: 'purple' });
-const wheelNumbers = [0.001, 0.002, 0.003, 0.004, 0.005, 0.01, 0.05, 0.1, 0.25, "1 FREE SPIN"];
+const wheelNumbers = [0.001, 0.002, 0.003, 0.004, 0.005, 0.05, 0.1, 0.2, 0.5, "1 FREE SPIN"];
 const displayNumbers = ["🔁", "🔁", "🔁", "🔁", "🔁", "🔁", "🔁", "🔁", "🔁", "🔁"];
 
 const makeWheel = () => {
@@ -231,6 +231,10 @@ class Spin extends React.Component {
             />
           </TouchableOpacity>
           <Image 
+            source={require('../assets/images/morespins.png')} 
+            style={styles.moreSpinsImage} // Use the style you defined
+          />
+          <Image 
             source={require('../assets/images/spintext.png')} 
             style={styles.spinTextImage} // Định nghĩa style cho hình ảnh
           />
@@ -238,7 +242,10 @@ class Spin extends React.Component {
             style={styles.addSpinsButton}
             onPress={this.addMoreSpins}
           >
-            <RNText style={styles.addSpinsText}>Add More Spins</RNText>
+            <Image 
+              source={require('../assets/images/ads.png')} 
+              style={styles.addSpinsButton} // Use the same style as your TouchableOpacity
+            />
           </TouchableOpacity>
           <RNText style={styles.totalWatered}>
             🌳 {typeof this.state.totalWatered === 'number' ? this.state.totalWatered.toFixed(4) : this.state.totalWatered}
@@ -397,7 +404,10 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 10,
     left: 10,
-  },
+    // Add dimensions for your image if necessary
+    width: 70, // Adjust to the width of your image
+    height: 70, // Adjust to the height of your image
+  },  
   addSpinsText: {
     fontSize: 18, // Điều chỉnh kích thước chữ
     color: '#000', // Điều chỉnh màu chữ
@@ -428,6 +438,14 @@ const styles = StyleSheet.create({
     top: 30,
     left: 0,
     margin: 10, // Điều chỉnh khoảng cách từ góc màn hình
+  },
+  moreSpinsImage: {
+    position: 'absolute',
+    bottom: -25,
+    right: 80,
+    // Add dimensions for your image if necessary
+    width: 250, // Adjust to the width of your image
+    height: 150, // Adjust to the height of your image
   },
   backImage: {
     width: 50, // Điều chỉnh kích thước hình ảnh
