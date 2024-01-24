@@ -48,8 +48,8 @@ const spinButtonPosition = {
 };
 
 const adsButtonPosition = {
-  top: screenHeight * 0.1, 
-  left: screenWidth * 0.377, 
+  top: screenHeight * 0.09, 
+  left: screenWidth * 0.39, 
 };
 
 const Home = ({ navigation }) => {
@@ -725,8 +725,8 @@ const styles = StyleSheet.create({
      top : adsButtonPosition.top,
      left: adsButtonPosition.left,
      // Add dimensions for your image if necessary
-     width: 80, // Adjust to the width of your image
-     height: 80, // Adjust to the height of your image
+     width: 50, // Adjust to the width of your image
+     height: 50, // Adjust to the height of your image
    },
   tree: {
     position: 'absolute',
