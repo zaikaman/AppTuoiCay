@@ -284,6 +284,10 @@ const Home = ({ navigation }) => {
   
       if (remainingWaterTimes > 0) {
         let newWaterAmount = waterAmount; // Sử dụng biến mới để không làm thay đổi trạng thái trực tiếp
+
+        if (newWaterAmount > 0.001) {
+          newWaterAmount = 0.001; // Nếu waterAmount lớn hơn 0.001, reset về 0.001
+        }
   
         // Loop through the animals array and check if each animal has been applied
         for (let animal of animals) {
