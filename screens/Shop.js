@@ -3,7 +3,7 @@ import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions, FlatList, 
 import ProgressBarAnimated from 'react-native-progress-bar-animated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { getDatabase, ref, get, set, update } from 'firebase/database';
-
+import { COLORS } from '../constants';
 import Modal from 'react-native-modal';
 // Import images
 import rabbitlvl1 from '../assets/images/rabbitlvl1.png';
@@ -30,6 +30,8 @@ import waiting from '../assets/images/waiting.png';
 import { ShopContext } from './ShopContext';
 import { getUserData, updateUserData } from '../utils/actions/userActions';
 import { getAuth } from 'firebase/auth';
+
+require('../assets/images/backShop.png');
 
 
 const images = {
@@ -113,11 +115,15 @@ const ShopItem = ({ item, onToggleAccept, onBuyItem }) => (
   </View>
 );
 
-const Shop = () => {
+const Shop = ({ navigation }) => {
   const { setSelectedItem } = useContext(ShopContext);
   const [activeTab, setActiveTab] = useState('background');
   const [acceptedItems, setAcceptedItems] = useState({});
   const [userData, setUserData] = useState(null);
+
+  const backHome = () => {
+    navigation.navigate('Home');
+  };
 
   const auth = getAuth();
   const [isConfirmModalVisible, setConfirmModalVisible] = useState(false);
@@ -420,6 +426,7 @@ const Shop = () => {
     setAcceptedItems(newAcceptedItems);
   };
 
+
   const renderItem = ({ item }) => (
     <ShopItem
       key={item.id}
@@ -431,8 +438,9 @@ const Shop = () => {
     />
   )
 
+
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: 'black' }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.primary, }}>
       <View style={styles.header}>
         <Image source={require("../assets/images/shop2.png")} style={styles.shopIcon} />
         {renderTabs()}
@@ -456,7 +464,10 @@ const Shop = () => {
           numColumns={2}
           contentContainerStyle={styles.itemsContainer}
           ListFooterComponent={<View style={{ height: 350 }} />}
-        />
+        /> 
+        <TouchableOpacity onPress={backHome}>
+        <Image source={require('../assets/images/backShop.png')} style={styles.backShopImage} />
+      </TouchableOpacity>
         <Modal isVisible={isConfirmModalVisible}>
           <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
             <Text>Are you sure you want to buy this product?</Text>
@@ -483,12 +494,12 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'gray',
+    backgroundColor: COLORS.primary,
   },
   header: {
     width: width,
     alignItems: 'center',
-    backgroundColor: 'gray',
+    backgroundColor: COLORS.primary,
   },
   shopIcon: {
     width: width,
@@ -504,7 +515,7 @@ const styles = StyleSheet.create({
     marginRight: 15,
     borderRadius: 10,
     marginTop: 15,
-    backgroundColor: 'white',
+    backgroundColor: '#0AB68B',
     marginBottom: 10,
   },
   itemsContainer: {
@@ -516,7 +527,7 @@ const styles = StyleSheet.create({
   itemContainer: {
     margin: 15,
     alignItems: 'center',
-    borderColor: 'black', // Màu đường biên
+    borderColor: COLORS.secondary, // Màu đường biên
     borderWidth: 3, // Kích thước đường biên
     borderRadius: 10, // Cong các góc để có góc bo
   },
@@ -573,6 +584,14 @@ const styles = StyleSheet.create({
     backgroundColor: 'red',
     borderRadius: 5,
   },
+  backShopImage: {
+    width: 65, // Thay đổi kích thước hình ảnh theo ý muốn
+    height: 53, // Thay đổi kích thước hình ảnh theo ý muốn
+    bottom: 560,
+    right: 150,
+    marginVertical: 10,
+    tintColor: COLORS.background, // Chỉnh màu của hình ảnh thành màu trắng
+  }
 });
 
 export default Shop;
