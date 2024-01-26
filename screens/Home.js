@@ -1,15 +1,16 @@
-
-import React, { useState, useEffect, useContext } from 'react';
-import { View, Image, TouchableOpacity, StyleSheet, Dimensions, Text, Alert } from 'react-native';
-import { Video } from 'expo-av';
-import ProgressBarAnimated from 'react-native-progress-bar-animated';
-import * as Font from 'expo-font';
-import { getUserData, updateUserData } from '../utils/actions/userActions';
-import { getAuth } from 'firebase/auth';
-import { Audio } from 'expo-av';
-import { Modal } from 'react-native';
-import sound from './sound';
-import { ShopContext } from './ShopContext';
+import React, { useState, useEffect, useContext } from 'react'
+import { View, Image, TouchableOpacity, StyleSheet, Dimensions, Text, Alert } from 'react-native'
+import { Video } from 'expo-av'
+import ProgressBarAnimated from 'react-native-progress-bar-animated'
+import * as Font from 'expo-font'
+import { getUserData, updateUserData } from '../utils/actions/userActions'
+import { getAuth } from 'firebase/auth'
+import { Audio } from 'expo-av'
+import { Modal } from 'react-native'
+import sound from './sound'
+import { ShopContext } from './ShopContext'
+import { COLORS } from '../constants'
+import { MaterialIcons, AntDesign, Ionicons } from '@expo/vector-icons'
 
 const stages = [
   require('../assets/images/tree1.png'),
@@ -22,102 +23,103 @@ const stages = [
   require('../assets/images/tree8.png'),
   require('../assets/images/tree9.png'),
   require('../assets/images/tree10.png'),
-];
+]
 
-const sizes = [100, 150, 200, 250, 300, 350, 400, 450, 500, 550];
-const positions = ['60%', '55%', '50%', '45%', '40%', '35%', '30%', '25%', '20%', '15%'];
+const sizes = [100, 150, 200, 250, 300, 350, 400, 450, 500, 550]
+const positions = ['60%', '55%', '50%', '45%', '40%', '35%', '30%', '25%', '20%', '15%']
 
 // Get the screen dimensions
-const screenWidth = Dimensions.get('window').width;
-const screenHeight = Dimensions.get('window').height;
+const screenWidth = Dimensions.get('window').width
+const screenHeight = Dimensions.get('window').height
 
 // Calculate the position of the buttons
 const signOutButtonPosition = {
-  top: screenHeight * 0.08, 
-  left: screenWidth * 0.78, 
-};
+  top: screenHeight * 0.08,
+  left: screenWidth * 0.78,
+}
 
 const vipButtonPosition = {
-  top: screenHeight * 0.22, 
-  right: screenWidth * 0.247, 
-};
+  top: screenHeight * 0.27,
+  right: screenWidth * 0.247,
+}
 
 const spinButtonPosition = {
   top: screenHeight * -0.421, // 5% từ đỉnh màn hình
   right: screenWidth * -0.455, // 5% từ cạnh phải màn hình
-};
+}
 
 const adsButtonPosition = {
-  top: screenHeight * 0.09, 
-  left: screenWidth * 0.39, 
-};
+  top: screenHeight * 0.09,
+  left: screenWidth * 0.39,
+}
 
 const Home = ({ navigation }) => {
-  const [rabbitLvl1, setRabbitLvl1] = useState('No');
-  const [rabbitLvl2, setRabbitLvl2] = useState('No');
-  const [foxLvl1, setFoxLvl1] = useState('No');
-  const [foxLvl2, setFoxLvl2] = useState('No');
-  const [birdLvl1, setBirdLvl1] = useState('No');
-  const [birdLvl2, setBirdLvl2] = useState('No');
-  const [monkeyLvl1, setMonkeyLvl1] = useState('No');
-  const [monkeyLvl2, setMonkeyLvl2] = useState('No');
+  const [rabbitLvl1, setRabbitLvl1] = useState('No')
+  const [rabbitLvl2, setRabbitLvl2] = useState('No')
+  const [foxLvl1, setFoxLvl1] = useState('No')
+  const [foxLvl2, setFoxLvl2] = useState('No')
+  const [birdLvl1, setBirdLvl1] = useState('No')
+  const [birdLvl2, setBirdLvl2] = useState('No')
+  const [monkeyLvl1, setMonkeyLvl1] = useState('No')
+  const [monkeyLvl2, setMonkeyLvl2] = useState('No')
   // const [elephantLvl1, setElephantLvl1] = useState('No');
   // const [elephantLvl2, setElephantLvl2] = useState('No');
-  const [horseLvl1, setHorseLvl1] = useState('No');
-  const [horseLvl2, setHorseLvl2] = useState('No');
-  const [wolfLvl1, setWolfLvl1] = useState('No');
-  const [wolfLvl2, setWolfLvl2] = useState('No');
+  const [horseLvl1, setHorseLvl1] = useState('No')
+  const [horseLvl2, setHorseLvl2] = useState('No')
+  const [wolfLvl1, setWolfLvl1] = useState('No')
+  const [wolfLvl2, setWolfLvl2] = useState('No')
   // const [background1, setBackground1] = useState('No');
   // const [background2, setBackground2] = useState('No');
   // const [background3, setBackground3] = useState('No');
   // const [background4, setBackground4] = useState('No');
   // const [background5, setBackground5] = useState('No');
   // const [background6, setBackground6] = useState('No');
-  const { selectedItem } = useContext(ShopContext);
-  const [treeStage, setTreeStage] = useState(0);
-  const [treeSize, setTreeSize] = useState(sizes[0]);
-  const [treePosition, setTreePosition] = useState(positions[0]);
-  const [totalWatered, setTotalWatered] = useState(0);
-  const [fontLoaded, setFontLoaded] = useState(false);
-  const [remainingWaterTimes, setRemainingWaterTimes] = useState(10000);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [isMusicPlaying, setIsMusicPlaying] = useState(false);
-  const [spinsLeft, setSpinsLeft] = useState(0);
-  const [waterAmount, setWaterAmount] = useState(0.001); // Initialize waterAmount state variable
-  const auth = getAuth();
+  const { selectedItem } = useContext(ShopContext)
+  const [treeStage, setTreeStage] = useState(0)
+  const [treeSize, setTreeSize] = useState(sizes[0])
+  const [treePosition, setTreePosition] = useState(positions[0])
+  const [totalWatered, setTotalWatered] = useState(0)
+  const [fontLoaded, setFontLoaded] = useState(false)
+  const [remainingWaterTimes, setRemainingWaterTimes] = useState(10000)
+  const [modalVisible, setModalVisible] = useState(false)
+  const [isMusicPlaying, setIsMusicPlaying] = useState(false)
+  const [spinsLeft, setSpinsLeft] = useState(0)
+  const [waterAmount, setWaterAmount] = useState(0.001) // Initialize waterAmount state variable
+  const [menuType, setMenuType] = useState('Home')
+  const auth = getAuth()
 
   useEffect(() => {
     const playMusic = async () => {
       try {
-        await sound.loadAsync(require('../assets/music/music.mp3'));
-        await sound.setIsLoopingAsync(true);
-        await sound.playAsync();
+        await sound.loadAsync(require('../assets/music/music.mp3'))
+        await sound.setIsLoopingAsync(true)
+        await sound.playAsync()
       } catch (error) {
-        console.log(error);
+        console.log(error)
       }
-    };
+    }
 
-    playMusic();
+    playMusic()
 
     return async () => {
-      await sound.unloadAsync();
-    };
-  }, []);
+      await sound.unloadAsync()
+    }
+  }, [])
 
   useEffect(() => {
     const fetchUserData = async () => {
-      const userData = await getUserData(auth.currentUser.uid);
-      setTreeStage(userData.treeStage);
-      setTotalWatered(userData.totalWatered);
-      setRemainingWaterTimes(userData.remainingWaterTimes || 10000);
-      setTreeSize(userData.treeSize || sizes[0]);
-      setTreePosition(userData.treePosition || positions[0]);
-      setWaterAmount(userData.waterAmount);
-      setSpinsLeft(userData.spinsLeft);
-    };
+      const userData = await getUserData(auth.currentUser.uid)
+      setTreeStage(userData.treeStage)
+      setTotalWatered(userData.totalWatered)
+      setRemainingWaterTimes(userData.remainingWaterTimes || 10000)
+      setTreeSize(userData.treeSize || sizes[0])
+      setTreePosition(userData.treePosition || positions[0])
+      setWaterAmount(userData.waterAmount)
+      setSpinsLeft(userData.spinsLeft)
+    }
 
-    fetchUserData();
-  }, []);
+    fetchUserData()
+  }, [])
 
   useEffect(() => {
     updateUserData(auth.currentUser.uid, {
@@ -127,92 +129,105 @@ const Home = ({ navigation }) => {
       treePosition,
       waterAmount,
       spinsLeft,
-    });
-  }, [treeStage, totalWatered, treeSize, treePosition, waterAmount, spinsLeft]);
+    })
+  }, [treeStage, totalWatered, treeSize, treePosition, waterAmount, spinsLeft])
 
   useEffect(() => {
     const fetchUserData = async () => {
-      const userData = await getUserData(auth.currentUser.uid);
-      setTotalWatered(userData.totalWatered);
-    };
-  
-    const interval = setInterval(fetchUserData, 5000); // 1000 milliseconds = 1 second
-  
-    return () => clearInterval(interval); // This is important to clear the interval when the component unmounts
-  }, []);  
+      const userData = await getUserData(auth.currentUser.uid)
+      setTotalWatered(userData.totalWatered)
+    }
+
+    const interval = setInterval(fetchUserData, 5000) // 1000 milliseconds = 1 second
+
+    return () => clearInterval(interval) // This is important to clear the interval when the component unmounts
+  }, [])
 
   useEffect(() => {
     const fetchUserData = async () => {
-      const userData = await getUserData(auth.currentUser.uid);
-  
+      const userData = await getUserData(auth.currentUser.uid)
+
       // Check if the fields exist, and if not, add them
       const fields = [
-        'Rabbitlvl1', 'Rabbitlvl2',
-        'Foxlvl1', 'Foxlvl2',
-        'Birdlvl1', 'Birdlvl2',
-        'Monkeylvl1', 'Monkeylvl2',
+        'Rabbitlvl1',
+        'Rabbitlvl2',
+        'Foxlvl1',
+        'Foxlvl2',
+        'Birdlvl1',
+        'Birdlvl2',
+        'Monkeylvl1',
+        'Monkeylvl2',
         // 'Elephantlvl1', 'Elephantlvl2',
-        'Horselvl1', 'Horselvl2',
-        'Wolflvl1', 'Wolflvl2',
+        'Horselvl1',
+        'Horselvl2',
+        'Wolflvl1',
+        'Wolflvl2',
         // 'Background1', 'Background2', 'Background3',
         // 'Background4', 'Background5', 'Background6'
-      ];
+      ]
       for (let field of fields) {
         if (userData[`${field}Applied`] === undefined) {
-          userData[`${field}Applied`] = 'No';
-          await updateUserData(auth.currentUser.uid, { [`${field}Applied`]: 'No' });
+          userData[`${field}Applied`] = 'No'
+          await updateUserData(auth.currentUser.uid, { [`${field}Applied`]: 'No' })
         }
-        setFieldState(field, userData[`${field}Applied`]);
+        setFieldState(field, userData[`${field}Applied`])
       }
-    };
-  
-    fetchUserData();
-  }, []);
-  
+    }
+
+    fetchUserData()
+  }, [])
+
   useEffect(() => {
     const fetchUserData = async () => {
-      const userData = await getUserData(auth.currentUser.uid);
+      const userData = await getUserData(auth.currentUser.uid)
       const fields = [
-        'Rabbitlvl1', 'Rabbitlvl2',
-        'Foxlvl1', 'Foxlvl2',
-        'Birdlvl1', 'Birdlvl2',
-        'Monkeylvl1', 'Monkeylvl2',
+        'Rabbitlvl1',
+        'Rabbitlvl2',
+        'Foxlvl1',
+        'Foxlvl2',
+        'Birdlvl1',
+        'Birdlvl2',
+        'Monkeylvl1',
+        'Monkeylvl2',
         // 'Elephantlvl1', 'Elephantlvl2',
-        'Horselvl1', 'Horselvl2',
-        'Wolflvl1', 'Wolflvl2'
+        'Horselvl1',
+        'Horselvl2',
+        'Wolflvl1',
+        'Wolflvl2',
         // 'Background1', 'Background2', 'Background3',
         // 'Background4', 'Background5', 'Background6'
-      ];
+      ]
       for (let field of fields) {
-        setFieldState(field, userData[`${field}Applied`]);
+        setFieldState(field, userData[`${field}Applied`])
       }
-    };
-  
+    }
+
     // Call the function once immediately
-    fetchUserData();
-  
+    fetchUserData()
+
     // Then set up the interval to call the function every 3 seconds
-    const intervalId = setInterval(fetchUserData, 3000);
-  
+    const intervalId = setInterval(fetchUserData, 3000)
+
     // Don't forget to clear the interval when the component unmounts
-    return () => clearInterval(intervalId);
-  }, []);  
-  
+    return () => clearInterval(intervalId)
+  }, [])
+
   useEffect(() => {
     async function loadFont() {
       await Font.loadAsync({
         'AlegreyaSans-Black': require('../assets/fonts/AlegreyaSans-Black.ttf'),
-      });
-      setFontLoaded(true);
+      })
+      setFontLoaded(true)
     }
 
-    loadFont();
+    loadFont()
 
-    return () => {
-      // Clean up the font when the component unmounts
-      Font.unloadAsync('AlegreyaSans-Black');
-    };
-  }, []);
+    // không unLoad font luôn vì nó tạo Warning hàm kh phù hợp với bản Expo
+    // return () => {
+    //   // Clean up the font when the component unmounts
+    //   Font.unloadAsync('AlegreyaSans-Black')
+    // }
+  }, [])
 
   const animals = [
     { name: 'Rabbitlvl1', increase: 0.01 },
@@ -220,41 +235,41 @@ const Home = ({ navigation }) => {
     { name: 'Foxlvl1', increase: 0.03 },
     { name: 'Foxlvl2', increase: 0.05 },
     { name: 'Birdlvl1', increase: 0.07 },
-    { name: 'Birdlvl2', increase: 0.10 },
+    { name: 'Birdlvl2', increase: 0.1 },
     { name: 'Monkeylvl1', increase: 0.13 },
     { name: 'Monkeylvl2', increase: 0.17 },
     { name: 'Horselvl1', increase: 0.31 },
     { name: 'Horselvl2', increase: 0.37 },
     { name: 'Wolflvl1', increase: 0.43 },
-    { name: 'Wolflvl2', increase: 0.50 },
-  ];  
+    { name: 'Wolflvl2', increase: 0.5 },
+  ]
 
   const setFieldState = (field, value) => {
-    switch(field) {
+    switch (field) {
       case 'Rabbitlvl1':
-        setRabbitLvl1(value);
-        break;
+        setRabbitLvl1(value)
+        break
       case 'Rabbitlvl2':
-        setRabbitLvl2(value);
-        break;
+        setRabbitLvl2(value)
+        break
       case 'Foxlvl1':
-        setFoxLvl1(value);
-        break;
+        setFoxLvl1(value)
+        break
       case 'Foxlvl2':
-        setFoxLvl2(value);
-        break;
+        setFoxLvl2(value)
+        break
       case 'Birdlvl1':
-        setBirdLvl1(value);
-        break;
+        setBirdLvl1(value)
+        break
       case 'Birdlvl2':
-        setBirdLvl2(value);
-        break;
+        setBirdLvl2(value)
+        break
       case 'Monkeylvl1':
-        setMonkeyLvl1(value);
-        break;
+        setMonkeyLvl1(value)
+        break
       case 'Monkeylvl2':
-        setMonkeyLvl2(value);
-        break;
+        setMonkeyLvl2(value)
+        break
       // case 'Elephantlvl1':
       //   setElephantLvl1(value);
       //   break;
@@ -262,127 +277,116 @@ const Home = ({ navigation }) => {
       //   setElephantLvl2(value);
       //   break;
       case 'Horselvl1':
-        setHorseLvl1(value);
-        break;
+        setHorseLvl1(value)
+        break
       case 'Horselvl2':
-        setHorseLvl2(value);
-        break;
+        setHorseLvl2(value)
+        break
       case 'Wolflvl1':
-        setWolfLvl1(value);
-        break;
+        setWolfLvl1(value)
+        break
       case 'Wolflvl2':
-        setWolfLvl2(value);
-        break;
+        setWolfLvl2(value)
+        break
       default:
-        console.log(`No matching field found for ${field}`);
+        console.log(`No matching field found for ${field}`)
     }
-  };  
+  }
 
   const waterTree = async () => {
     if (auth.currentUser) {
-      const userData = await getUserData(auth.currentUser.uid);
-  
+      const userData = await getUserData(auth.currentUser.uid)
+
       if (remainingWaterTimes > 0) {
-        let newWaterAmount = waterAmount; // Sử dụng biến mới để không làm thay đổi trạng thái trực tiếp
+        let newWaterAmount = waterAmount // Sử dụng biến mới để không làm thay đổi trạng thái trực tiếp
 
         if (newWaterAmount > 0.001) {
-          newWaterAmount = 0.001; // Nếu waterAmount lớn hơn 0.001, reset về 0.001
+          newWaterAmount = 0.001 // Nếu waterAmount lớn hơn 0.001, reset về 0.001
         }
-  
+
         // Loop through the animals array and check if each animal has been applied
         for (let animal of animals) {
-          if (newWaterAmount >= 0.0039) { // Nếu waterAmount lớn hơn hoặc bằng 0.0039, dừng vòng lặp
-            break;
+          if (newWaterAmount >= 0.0039) {
+            // Nếu waterAmount lớn hơn hoặc bằng 0.0039, dừng vòng lặp
+            break
           }
-        
+
           if (userData[`${animal.name}Applied`] === 'Yes') {
-            newWaterAmount += newWaterAmount * animal.increase;
+            newWaterAmount += newWaterAmount * animal.increase
           }
         }
-        
-        let newTotal = totalWatered + newWaterAmount;
-        setTotalWatered(newTotal);
-  
+
+        let newTotal = totalWatered + newWaterAmount
+        setTotalWatered(newTotal)
+
         if (newTotal >= treeStage + 1 && treeStage < stages.length - 1) {
-          let newTreeStage = treeStage + 1;
-          setTreeStage(newTreeStage);
-          setTreeSize(sizes[newTreeStage]);
-          setTreePosition(positions[newTreeStage]);
+          let newTreeStage = treeStage + 1
+          setTreeStage(newTreeStage)
+          setTreeSize(sizes[newTreeStage])
+          setTreePosition(positions[newTreeStage])
         }
-  
-        setRemainingWaterTimes(remainingWaterTimes - 1);
-        setWaterAmount(newWaterAmount); // Cập nhật trạng thái waterAmount
+
+        setRemainingWaterTimes(remainingWaterTimes - 1)
+        setWaterAmount(newWaterAmount) // Cập nhật trạng thái waterAmount
         updateUserData(auth.currentUser.uid, {
           remainingWaterTimes: remainingWaterTimes - 1,
           waterAmount: newWaterAmount, // Update the waterAmount field in the database
-        });
+        })
       }
     } else {
-      console.log('User is not logged in');
+      console.log('User is not logged in')
     }
-  };  
+  }
 
   const addMoreSpins = async () => {
     // Hiển thị hộp thoại xác nhận
-    Alert.alert(
-      "Free Spin",
-      "Do you want to watch an ad for a free spin?",
-      [
-        {
-          text: "No",
-          onPress: () => console.log("Cancel Pressed"),
-          style: "cancel"
+    Alert.alert('Free Spin', 'Do you want to watch an ad for a free spin?', [
+      {
+        text: 'No',
+        onPress: () => console.log('Cancel Pressed'),
+        style: 'cancel',
+      },
+      {
+        text: 'Yes',
+        onPress: async () => {
+          // Cập nhật spinsLeft trong cơ sở dữ liệu
+          await updateUserData(auth.currentUser.uid, { spinsLeft: spinsLeft + 1 })
+
+          // Cập nhật trạng thái spinsLeft
+          setSpinsLeft(spinsLeft + 1)
+
+          // Hiển thị thông báo
+          Alert.alert('Success', 'A free spin has been added!')
         },
-        {
-          text: "Yes", 
-          onPress: async () => {
-            // Cập nhật spinsLeft trong cơ sở dữ liệu
-            await updateUserData(auth.currentUser.uid, { spinsLeft: spinsLeft + 1 });
-  
-            // Cập nhật trạng thái spinsLeft
-            setSpinsLeft(spinsLeft + 1);
-          
-            // Hiển thị thông báo
-            Alert.alert("Success", "A free spin has been added!");
-          }
-        }
-      ]
-    );
-  };      
+      },
+    ])
+  }
 
   const signOutAlert = () => {
-    Alert.alert(
-      'Sign Out',
-      'Are you sure you want to sign out?',
-      [
-        {
-          text: 'No',
-          onPress: () => console.log('Cancel Pressed'),
-          style: 'cancel',
-        },
-        {
-          text: 'Yes',
-          onPress: () => navigation.navigate('Login'),
-        },
-      ]
-    );
-  };
+    Alert.alert('Sign Out', 'Are you sure you want to sign out?', [
+      {
+        text: 'No',
+        onPress: () => console.log('Cancel Pressed'),
+        style: 'cancel',
+      },
+      {
+        text: 'Yes',
+        onPress: () => navigation.navigate('Login'),
+      },
+    ])
+  }
 
-  const barWidth = Dimensions.get('screen').width - 30;
+  const barWidth = Dimensions.get('screen').width - 30
 
   const vipButtonAlert = () => {
-    Alert.alert(
-      "VIP Button",
-      "You have clicked the VIP button",
-      [
-        {
-          text: "OK",
-          onPress: () => console.log("OK Pressed"),
-          style: "cancel"
-        }
-      ]
-    );
-  };
+    Alert.alert('VIP Button', 'You have clicked the VIP button', [
+      {
+        text: 'OK',
+        onPress: () => console.log('OK Pressed'),
+        style: 'cancel',
+      },
+    ])
+  }
 
   return (
     <View style={styles.container}>
@@ -402,16 +406,28 @@ const Home = ({ navigation }) => {
         resizeMode="contain"
       />
       {selectedItem && <Image source={selectedItem.image} style={styles.backgroundImage} />}
-      {rabbitLvl1 === 'Yes' && <Image source={require('../assets/images/rabbitlvl1home.png')} style={styles.rabbitImage1} />}
-      {rabbitLvl2 === 'Yes' && <Image source={require('../assets/images/rabbitlvl2home.png')} style={styles.rabbitImage2} />}
+      {rabbitLvl1 === 'Yes' && (
+        <Image source={require('../assets/images/rabbitlvl1home.png')} style={styles.rabbitImage1} />
+      )}
+      {rabbitLvl2 === 'Yes' && (
+        <Image source={require('../assets/images/rabbitlvl2home.png')} style={styles.rabbitImage2} />
+      )}
       {foxLvl1 === 'Yes' && <Image source={require('../assets/images/foxlvl1home.png')} style={styles.foxImage1} />}
       {foxLvl2 === 'Yes' && <Image source={require('../assets/images/foxlvl2home.png')} style={styles.foxImage2} />}
-      {monkeyLvl1 === 'Yes' && <Image source={require('../assets/images/monkeylvl1home.png')} style={styles.monkeyImage1} />}
-      {monkeyLvl2 === 'Yes' && <Image source={require('../assets/images/monkeylvl2home.png')} style={styles.monkeyImage2} />}
+      {monkeyLvl1 === 'Yes' && (
+        <Image source={require('../assets/images/monkeylvl1home.png')} style={styles.monkeyImage1} />
+      )}
+      {monkeyLvl2 === 'Yes' && (
+        <Image source={require('../assets/images/monkeylvl2home.png')} style={styles.monkeyImage2} />
+      )}
       {/* {elephantLvl1 === 'Yes' && <Image source={require('../assets/images/elephantlvl1home.png')} style={styles.elephantImage1} />}
       {elephantLvl2 === 'Yes' && <Image source={require('../assets/images/elephantlvl2home.png')} style={styles.elephantImage2} />} */}
-      {horseLvl1 === 'Yes' && <Image source={require('../assets/images/horselvl1home.png')} style={styles.horseImage1} />}
-      {horseLvl2 === 'Yes' && <Image source={require('../assets/images/horselvl2home.png')} style={styles.horseImage2} />}
+      {horseLvl1 === 'Yes' && (
+        <Image source={require('../assets/images/horselvl1home.png')} style={styles.horseImage1} />
+      )}
+      {horseLvl2 === 'Yes' && (
+        <Image source={require('../assets/images/horselvl2home.png')} style={styles.horseImage2} />
+      )}
       {wolfLvl1 === 'Yes' && <Image source={require('../assets/images/wolflvl1home.png')} style={styles.wolfImage1} />}
       {wolfLvl2 === 'Yes' && <Image source={require('../assets/images/wolflvl2home.png')} style={styles.wolfImage2} />}
       {/* {background3 === 'Yes' && <Image source={require('../assets/images/background3.png')} style={styles.backgroundImage3} />}
@@ -429,139 +445,106 @@ const Home = ({ navigation }) => {
           backgroundColorOnComplete="#6CC644"
           useNativeDriver={false}
         />
-        {fontLoaded && <Text style={{ ...styles.moneyEarned, color: 'yellow' }}>🌳 {(totalWatered || 0).toFixed(4)}</Text>}
+        {fontLoaded && (
+          <Text style={{ ...styles.moneyEarned, color: 'yellow' }}>🌳 {(totalWatered || 0).toFixed(4)}</Text>
+        )}
       </View>
       <View style={styles.remainingContainer}>
         {fontLoaded && <Text style={{ ...styles.remainingText, color: 'yellow' }}>💧 {remainingWaterTimes}</Text>}
         {fontLoaded && <Text style={{ ...styles.remainingText, color: 'yellow' }}>⚡ {waterAmount.toFixed(4)}</Text>}
       </View>
-      <TouchableOpacity style={styles.buttonContainer} onPress={waterTree}>
-        <Image source={require('../assets/images/water.png')} style={styles.waterImage} />
-      </TouchableOpacity>
+      {/* <View style={styles.buttonContainer}></View> */}
       <TouchableOpacity onPress={() => navigation.navigate('Spin')}>
         <Image source={require('../assets/images/spin.png')} style={styles.spinButton} />
       </TouchableOpacity>
       <TouchableOpacity style={styles.signOutButton} onPress={signOutAlert}>
         <Image source={require('../assets/images/back.png')} style={styles.signOutImage} />
       </TouchableOpacity>
-      <TouchableOpacity style = {styles.menuButton} onPress={() => {setModalVisible(true)}}>
-        <Image source={require('../assets/images/menu.png')} style = {styles.waterImage} />
-      </TouchableOpacity>
       <TouchableOpacity onPress={vipButtonAlert}>
         <Image source={require('../assets/images/vip.png')} style={styles.vipButton} />
       </TouchableOpacity>
-      <TouchableOpacity 
-        style={styles.addSpinsButton}
-        onPress={addMoreSpins}
-      >
-        <Image 
-          source={require('../assets/images/ads.png')} 
+      <TouchableOpacity style={styles.addSpinsButton} onPress={addMoreSpins}>
+        <Image
+          source={require('../assets/images/ads.png')}
           style={styles.addSpinsButton} // Use the same style as your TouchableOpacity
         />
       </TouchableOpacity>
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => {
-          setModalVisible(!modalVisible);
-        }}
-      >
-        <View style={[styles.modal, { backgroundColor: '#abb94d', height: '55%' }]}>
-          <View style={{ height: 1 }} />
-          <Text style={{ textAlign: 'center', marginTop: 20, fontSize: 3, ...styles.modal_text }}>Menu</Text>
-          <TouchableOpacity
-            style={styles.closeModal}
-            onPress={() => {
-              setModalVisible(false);
-            }}
-          >
-            <Text style={{ fontSize: 25, marginLeft: 10, marginTop: 3 }}>x</Text>
+      <View style={styles.menuContainer}>
+        <TouchableOpacity
+          onPress={() => {
+            setMenuType('Home')
+          }}
+        >
+          <AntDesign name="home" size={30} color={menuType === 'Home' ? 'blue' : COLORS.black} />
+          <Text style={styles.menuText}>Home</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={{ marginRight: 70 }}
+          onPress={() => {
+            navigation.navigate('User')
+          }}
+        >
+          <AntDesign name="user" size={30} color={menuType === 'User' ? COLORS.primary : COLORS.black} />
+          <Text style={styles.menuText}>User</Text>
+        </TouchableOpacity>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={{ paddingLeft: 5 }} onPress={waterTree}>
+            <Ionicons name="water" size={70} color={'rgba(0, 0, 255, 1)'} />
           </TouchableOpacity>
-          <View style={styles.modalContent}>
-            <TouchableOpacity
-              style={[styles.modal_textContainer, { borderWidth: 1, borderColor: 'black', flexDirection: 'row', alignItems: 'center' }]}
-              onPress={() => {
-                navigation.navigate('User');
-                setModalVisible(false);
-              }}
-            >
-              <Image
-                source={require('../assets/images/profile.png')}
-                style={{ width: 40, height: 40, marginRight: 10 }}
-              />
-              <Text style={[styles.modal_text, { marginRight: 22, marginTop: 1 }]}>Your Profile</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.modal_textContainer, { borderWidth: 1, borderColor: 'black', flexDirection: 'row', alignItems: 'center' }]}
-              onPress={() => {
-                Alert.alert(
-                  "VIP Button",
-                  "You have clicked the VIP button",
-                  [
-                    {
-                      text: "OK",
-                      onPress: () => console.log("OK Pressed"),
-                      style: "cancel"
-                    }
-                  ]
-                );
-                setModalVisible(false);
-              }}
-            >
-              <Image
-                source={require('../assets/images/vip.png')}
-                style={{ width: 40, height: 40, marginRight: 10 }}
-              />
-              <Text style={[styles.modal_text, { marginRight: 56, marginTop: 1 }]}>VIP</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.modal_textContainer, { borderWidth: 1, borderColor: 'black', flexDirection: 'row', alignItems: 'center' }]}
-              onPress={() => {
-                navigation.navigate('Shop');
-                setModalVisible(false);
-              }}
-            >
-              <Image
-                source={require('../assets/images/shop.png')}
-                style={{ width: 40, height: 40, marginRight: 10 }}
-              />
-              <Text style={[styles.modal_text, { marginRight: 52, marginTop: 1 }]}>Shop</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.modal_textContainer, { borderWidth: 1, borderColor: 'black', flexDirection: 'row', alignItems: 'center' }]}
-              onPress={() => {
-                navigation.navigate('Leaderboard');
-                setModalVisible(false);
-              }}
-            >
-              <Image
-                source={require('../assets/images/leaderboard.png')}
-                style={{ width: 40, height: 40, marginRight: 10 }}
-              />
-              <Text style={[styles.modal_text, { marginRight: 20, marginTop: 1 }]}>Leaderboard</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.modal_textContainer, { borderWidth: 1, borderColor: 'black', flexDirection: 'row', alignItems: 'center' }]}
-              onPress={() => {
-                navigation.navigate('Setting');
-                setModalVisible(false);
-              }}
-            >
-              <Image
-                source={require('../assets/images/settings.png')}
-                style={{ width: 40, height: 40, marginRight: 10 }}
-              />
-              <Text style={[styles.modal_text, { marginRight: 40, marginTop: 1 }]}>Settings</Text>
-            </TouchableOpacity>
-          </View>
         </View>
-      </Modal>
+        <TouchableOpacity
+          style={{ marginLeft: 10, alignItems: 'center' }}
+          onPress={() => {
+            navigation.navigate('Shop')
+          }}
+        >
+          <AntDesign name="shoppingcart" size={30} color={menuType === 'Shop' ? COLORS.primary : COLORS.black} />
+          <Text style={styles.menuText}>Shop</Text>
+        </TouchableOpacity>
+        <TouchableOpacity>
+          <AntDesign
+            name="barschart"
+            size={30}
+            color={menuType === 'Leaderboard' ? COLORS.primary : COLORS.black}
+            onPress={() => {
+              navigation.navigate('Leaderboard')
+            }}
+          />
+          <Text style={styles.menuText}>Leader</Text>
+          <Text style={styles.menuText1}>board</Text>
+        </TouchableOpacity>
+      </View>
     </View>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
+  menuContainer: {
+    width: '100%',
+    height: 80,
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    left: 0,
+    backgroundColor: COLORS.white,
+    borderTopRightRadius: 19,
+    borderTopLeftRadius: 19,
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingTop: 10,
+    paddingHorizontal: 20,
+  },
+
+  menuText: {
+    fontSize: 12,
+    color: COLORS.gray,
+    marginTop: 3,
+  },
+  menuText1: {
+    fontSize: 12,
+    color: COLORS.gray,
+  },
   container: {
     flex: 1,
     alignItems: 'center',
@@ -576,8 +559,8 @@ const styles = StyleSheet.create({
     bottom: 100,
   },
   spinButton: {
-    width: 80, 
-    height: 80, 
+    width: 80,
+    height: 80,
     position: 'absolute',
     top: spinButtonPosition.top,
     right: spinButtonPosition.right,
@@ -586,65 +569,65 @@ const styles = StyleSheet.create({
     width: '10%', // or any other size
     height: '10%', // or any other size
     position: 'absolute', // if you want it to be positioned absolutely
-    top : 550,
-    bottom : 40,
-    left : 80,
+    top: 550,
+    bottom: 40,
+    left: 80,
   },
   rabbitImage2: {
     width: '10%', // or any other size
     height: '10%', // or any other size
     position: 'absolute', // if you want it to be positioned absolutely
-    top : 550,
-    bottom : 40,
-    left : 300,
+    top: 550,
+    bottom: 40,
+    left: 300,
   },
   foxImage1: {
     width: '10%', // or any other size
     height: '10%', // or any other size
     position: 'absolute', // if you want it to be positioned absolutely
-    top : 500,
-    bottom : 40,
-    left : 100,
+    top: 500,
+    bottom: 40,
+    left: 100,
   },
   foxImage2: {
     width: '10%', // or any other size
     height: '10%', // or any other size
     position: 'absolute', // if you want it to be positioned absolutely
-    top : 500,
-    bottom : 40,
-    left : 70,
+    top: 500,
+    bottom: 40,
+    left: 70,
   },
   birdImage1: {
     width: '20%', // or any other size
     height: '10%', // or any other size
     position: 'absolute', // if you want it to be positioned absolutely
-    top : 265,
-    bottom : 40,
-    left : 310,
+    top: 265,
+    bottom: 40,
+    left: 310,
   },
   birdImage2: {
     width: '20%', // or any other size
     height: '10%', // or any other size
     position: 'absolute', // if you want it to be positioned absolutely
-    top : 100,
-    bottom : 40,
-    left : 70,
+    top: 100,
+    bottom: 40,
+    left: 70,
   },
   monkeyImage1: {
     width: '10%', // or any other size
     height: '10%', // or any other size
     position: 'absolute', // if you want it to be positioned absolutely
-    top : 520,
-    bottom : 40,
-    left : 340,
+    top: 520,
+    bottom: 40,
+    left: 300,
   },
   monkeyImage2: {
     width: '10%', // or any other size
     height: '10%', // or any other size
     position: 'absolute', // if you want it to be positioned absolutely
-    top : 190,
-    bottom : 40,
-    left : 300,
+    top: 190,
+    bottom: 40,
+    left: 300,
   },
   // elephantImage1: {
   //   width: '30%', // or any other size
@@ -666,33 +649,33 @@ const styles = StyleSheet.create({
     width: '12%', // or any other size
     height: '12%', // or any other size
     position: 'absolute', // if you want it to be positioned absolutely
-    top : 480,
-    bottom : 40,
-    left : 22,
+    top: 480,
+    bottom: 40,
+    left: 22,
   },
   horseImage2: {
     width: '18%', // or any other size
     height: '18%', // or any other size
     position: 'absolute', // if you want it to be positioned absolutely
-    top : 550,
-    bottom : 40,
-    left : 200,
+    top: 550,
+    bottom: 40,
+    left: 200,
   },
   wolfImage1: {
     width: '10%', // or any other size
     height: '10%', // or any other size
     position: 'absolute', // if you want it to be positioned absolutely
-    top : 600,
-    bottom : 40,
-    left : 100,
+    top: 600,
+    bottom: 40,
+    left: 100,
   },
   wolfImage2: {
     width: '10%', // or any other size
     height: '10%', // or any other size
     position: 'absolute', // if you want it to be positioned absolutely
-    top : 500,
-    bottom : 40,
-    left : 250,
+    top: 500,
+    bottom: 40,
+    left: 250,
   },
   // backgroundImage1: {
   //   width: '100%', // or any other size
@@ -721,17 +704,17 @@ const styles = StyleSheet.create({
   // },
   remainingText: {
     fontFamily: 'AlegreyaSans-Black',
-    fontSize: 16,
-    marginBottom : 8
+    fontSize: 20,
+    marginBottom: 8,
   },
-   addSpinsButton: {
-     position: 'absolute',
-     top : adsButtonPosition.top,
-     left: adsButtonPosition.left,
-     // Add dimensions for your image if necessary
-     width: 50, // Adjust to the width of your image
-     height: 50, // Adjust to the height of your image
-   },
+  addSpinsButton: {
+    position: 'absolute',
+    top: adsButtonPosition.top,
+    left: adsButtonPosition.left,
+    // Add dimensions for your image if necessary
+    width: 50, // Adjust to the width of your image
+    height: 50, // Adjust to the height of your image
+  },
   tree: {
     position: 'absolute',
   },
@@ -747,26 +730,26 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   buttonContainer: {
-    width: 70,
-    height: 70,
-    borderRadius: 35,
-    backgroundColor: '#abb94d',
+    width: 75,
+    height: 85,
+    borderRadius: '100%',
+    backgroundColor: COLORS.white,
     justifyContent: 'center',
     alignItems: 'center',
     position: 'absolute',
-    right: 20,
-    bottom: 40,
+    right: screenWidth * 0.4,
+    bottom: 20,
   },
   vipButton: {
-    width: 80, 
-    height: 80, 
+    width: 80,
+    height: 80,
     justifyContent: 'center',
     alignItems: 'center',
     position: 'absolute',
     top: vipButtonPosition.top,
     right: vipButtonPosition.right,
   },
-  menuButton : {
+  menuButton: {
     width: 70,
     height: 70,
     borderRadius: 35,
@@ -778,8 +761,9 @@ const styles = StyleSheet.create({
     bottom: 40,
   },
   waterImage: {
-    width: 30,
-    height: 30,
+    width: 65,
+    height: 65,
+    marginBottom: 0,
   },
   signOutButton: {
     width: 70,
@@ -801,43 +785,43 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: 'blue',
   },
-  modal : {
-    positions : 'absolute',
-    top : 240, 
-    left : 70,
-    width : 250,
-    height : 340,
-    backgroundColor : 'white',
-    borderRadius : 10,
-    backgroundColor : '#98fb98',
+  modal: {
+    positions: 'absolute',
+    top: 240,
+    left: 70,
+    width: 250,
+    height: 300,
+    backgroundColor: 'white',
+    borderRadius: 10,
+    backgroundColor: '#98fb98',
   },
-  modalContent : {
-    padding :20,
-    flex : 1,
-    justifyContent : 'center',
-    alignItems : 'center',
-    marginTop :20,
+  modalContent: {
+    padding: 20,
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 20,
   },
-  modal_textContainer : {
-    padding : 10,
-    justifyContent : 'space-between',
-    alignItems : 'center',
-    width : '100%',
+  modal_textContainer: {
+    padding: 10,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '100%',
   },
-  closeModal : {
-    position : 'absolute',
-    top : 0,
-    right : 0,
-    backgroundColor : '#ff6347',
-    width : 35,
-    height : 40,
-    borderTopRightRadius : 10,
+  closeModal: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    backgroundColor: '#ff6307',
+    width: 35,
+    height: 40,
+    borderTopRightRadius: 10,
   },
   modal_text: {
-    height : 30,
-    fontFamily : 'AlegreyaSans-Black',
-    fontSize : 20
-  }
-});
+    height: 30,
+    fontFamily: 'AlegreyaSans-Black',
+    fontSize: 20,
+  },
+})
 
-export default Home;
+export default Home
