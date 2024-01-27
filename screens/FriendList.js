@@ -15,6 +15,7 @@ import { getFirebaseApp } from '../utils/firebaseHelper'
 import { getAuth } from 'firebase/auth'
 import { useEffect, useState } from 'react'
 import { Modal } from 'react-native'
+import ChatScreen from './ChatScreen'
 
 export default function FriendsList({ navigation }) {
   const [searchName, setSearchName] = useState('')
@@ -389,10 +390,7 @@ export default function FriendsList({ navigation }) {
           <View style={{ flex: 1, flexDirection: 'column', paddingHorizontal: 20, marginTop: 10 }}>
             {requests
               ? requests.map((requestName, index) => (
-                  <View
-                    style={{ flexDirection: 'row', alignItems: 'center' }}
-                    key={index + Math.random().toString()}
-                  >
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }} key={index + Math.random().toString()}>
                     <Text
                       style={{
                         ...FONTS.h3,
@@ -439,7 +437,7 @@ export default function FriendsList({ navigation }) {
                       {element}
                     </Text>
                     <TouchableOpacity
-                      style={{}}
+                      style={{ width: '100%', height: '40%', alignItems: 'center', justifyContent: 'center' }}
                       onPress={() => {
                         setModalVisible(!modalVisible)
                         setUnFrName(element)
@@ -480,20 +478,30 @@ export default function FriendsList({ navigation }) {
                 <TouchableOpacity
                   style={{
                     width: '100%',
-                    height: '50%',
+                    height: '40%',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    borderBottomWidth: 1, // Độ dày của đường viền
-                    borderBottomColor: 'rgba(191, 191, 191, 0.8)',
+                    // borderBottomWidth: 1, // Độ dày của đường viền
+                    // borderBottomColor: 'rgba(191, 191, 191, 0.8)',
                   }}
                   onPress={onHandleUnFr}
                 >
                   <Text style={styles.modal_text}>Unfriend</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  style={{ width: '100%', height: '50%', alignItems: 'center', justifyContent: 'center' }}
+                  style={{ width: '100%', height: '40%', alignItems: 'center', justifyContent: 'center' }}
                 >
                   <Text style={styles.modal_text}>View Profile</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={{ width: '100%', height: '40%', alignItems: 'center', justifyContent: 'center' }}
+                  onPress={async () => {
+                    const friendId = await getUserIdByFullName(unFrName)
+                    navigation.navigate('ChatScreen', { friendName: unFrName, friendId: friendId })
+                    setModalVisible(false)
+                  }}
+                >
+                  <Text style={styles.modal_text}>Message</Text>
                 </TouchableOpacity>
               </View>
             </View>
