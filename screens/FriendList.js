@@ -7,6 +7,7 @@ import {
   Alert,
   ScrollView,
   TouchableWithoutFeedback,
+  Image,
 } from 'react-native'
 import { MaterialIcons } from '@expo/vector-icons'
 import { COLORS, FONTS } from '../constants'
@@ -15,7 +16,6 @@ import { getFirebaseApp } from '../utils/firebaseHelper'
 import { getAuth } from 'firebase/auth'
 import { useEffect, useState } from 'react'
 import { Modal } from 'react-native'
-import ChatScreen from './ChatScreen'
 
 export default function FriendsList({ navigation }) {
   const [searchName, setSearchName] = useState('')
@@ -73,7 +73,10 @@ export default function FriendsList({ navigation }) {
       const users = snapshot.val()
       for (let userId in users) {
         if (users[userId].fullName === fullName) {
-          return users[userId].fullName
+          return {
+            fullName: users[userId].fullName,
+            profilePicture: users[userId].profilePicture, // Assuming this is the field in your database
+          }
         }
       }
       return null
@@ -429,18 +432,22 @@ export default function FriendsList({ navigation }) {
                     }}
                     key={index + Math.random().toString()}
                   >
+                    <Image
+                      source={{ uri: element.profilePicture }}
+                      style={{ width: 50, height: 50, borderRadius: 25 }} // Adjust the size and shape as needed
+                    />
                     <Text
                       style={{
                         ...FONTS.h3,
                       }}
                     >
-                      {element}
+                      {element.fullName}
                     </Text>
                     <TouchableOpacity
-                      style={{ width: '100%', height: '40%', alignItems: 'center', justifyContent: 'center' }}
+                      style={{ height: '40%', alignItems: 'center', justifyContent: 'center' }}
                       onPress={() => {
                         setModalVisible(!modalVisible)
-                        setUnFrName(element)
+                        setUnFrName(element.fullName)
                       }}
                     >
                       <MaterialIcons name="menu-open" size={25} color={COLORS.black} />
