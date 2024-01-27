@@ -1,10 +1,10 @@
 import React, { useEffect, useState, useCallback } from 'react'
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native'
 import { Avatar } from 'react-native-elements'
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
 import { GiftedChat } from 'react-native-gifted-chat'
 import { getFirebaseApp } from '../utils/firebaseHelper'
-import { getDatabase, ref, onValue, push, off } from 'firebase/database'
+import { getDatabase, ref, onValue, push, off, get } from 'firebase/database'
 
 const ChatScreen = ({ navigation, route }) => {
   const [messages, setMessages] = useState([])
@@ -13,6 +13,7 @@ const ChatScreen = ({ navigation, route }) => {
   const db = getDatabase(app)
   const chatsRef = ref(db, 'chats')
   const friendId = route.params.friendId
+  const [profilePicture, setProfilePicture] = useState(null)
 
   const signOut = () => {
     auth
@@ -25,10 +26,36 @@ const ChatScreen = ({ navigation, route }) => {
       })
   }
 
+  const getProfilePicture = async (userId) => {
+    try {
+      const app = getFirebaseApp()
+      const db = getDatabase(app)
+      const userRef = ref(db, `users/${userId}`)
+      const snapshot = await get(userRef)
+      const userData = snapshot.val()
+      return userData.profilePicture // Assuming this is the field in your database
+    } catch (error) {
+      console.error('Error in getProfilePicture: ', error)
+      throw error
+    }
+  }
+
+  useEffect(() => {
+    getProfilePicture(friendId).then((url) => setProfilePicture(url))
+  }, [])
+
   useEffect(() => {
     if (route.params && route.params.friendName) {
       navigation.setOptions({
         title: route.params.friendName, // Set the title to the friend's name
+        headerLeft: () => (
+          <View style={{ marginLeft: 10 }}>
+            <Image
+              source={{ uri: profilePicture }} // Assuming this is passed in the route params
+              style={{ width: 50, height: 50, borderRadius: 25 }} // Adjust the size and shape as needed
+            />
+          </View>
+        ),
       })
     }
     // Rest of your code...
@@ -106,7 +133,13 @@ const ChatScreen = ({ navigation, route }) => {
           avatar: auth?.currentUser?.photoURL,
         }}
       />
-      <Text style={styles.userName}>{route.params.friendName}</Text>
+      <View style={styles.userNameContainer}>
+        <Image
+          source={{ uri: profilePicture }}
+          style={{ width: 50, height: 50, borderRadius: 25 }} // Adjust the size and shape as needed
+        />
+        <Text style={styles.userName}>{route.params.friendName}</Text>
+      </View>
     </View>
   )
 }
@@ -115,13 +148,23 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  userNameContainer: {
+    position: 'absolute',
+    top: '0%',
+    width: '115%',
+    backgroundColor: '#f2f2f2',
+    zIndex: 1,
+    paddingTop: 40, // Tăng giá trị này để làm phần trên của tab dày hơn
+    padding: 10,
+    borderBottomWidth: 0,
+    borderBottomColor: '#ccc',
+  },
   userName: {
     position: 'absolute',
-    top: '5%',
     fontSize: 24,
     fontWeight: 'bold',
-    textAlign: 'center', // Add this
-    width: '100%', // And this
+    top: '100%',
+    paddingLeft: 80,
   },
 })
 
