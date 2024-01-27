@@ -13,12 +13,12 @@ import * as ImagePicker from 'expo-image-picker'
 import Modal from 'react-native-modal'
 
 const profileImages = [
-  require('../assets/images/image1.png'),
-  require('../assets/images/image2.png'),
-  require('../assets/images/image3.png'),
-  require('../assets/images/image4.png'),
-  require('../assets/images/image5.png'),
-  require('../assets/images/image6.png'),
+  'https://i.ibb.co/sjpJCcf/image1.png',
+  'https://i.ibb.co/nmdz8gC/image2.png',
+  'https://i.ibb.co/nzVxMcs/image3.png',
+  'https://i.ibb.co/b2YZS61/image4.png',
+  'https://i.ibb.co/5KCsKCH/image5.png',
+  'https://i.ibb.co/HTyM4CW/image6.png',
 ]
 
 const EditProfile = ({ navigation }) => {
@@ -92,9 +92,9 @@ const EditProfile = ({ navigation }) => {
 
   const [selectedImage, setSelectedImage] = useState(profileImages[0])
   const [selectedImageIndex, setSelectedImageIndex] = useState(Math.floor(Math.random() * profileImages.length))
-  const [name, setName] = useState('Melissa Peters')
-  const [email, setEmail] = useState('metperters@gmail.com')
-  const [country, setCountry] = useState('Nigeria')
+  const [name, setName] = useState('Loading')
+  const [email, setEmail] = useState('Loading')
+  const [country, setCountry] = useState('Loading')
   const [showImagePicker, setShowImagePicker] = useState(false)
 
   const [openStartDatePicker, setOpenStartDatePicker] = useState(false)
@@ -113,9 +113,20 @@ const EditProfile = ({ navigation }) => {
 
   const handleImageSelection = (index) => {
     setSelectedImageIndex(index)
-    const selectedImage = profileImages[index]
+    const selectedImage = { uri: profileImages[index] } // Use an object with a uri property
     setSelectedImage(selectedImage)
-    setImage(null)
+    setImage(null) // Reset the uploaded image
+
+    // Update profilePictureSource in Firebase
+    const app = getFirebaseApp()
+    const db = getDatabase(app)
+    const auth = getAuth(app)
+    const userRef = ref(db, `users/${auth.currentUser.uid}`) // link with the current user ID
+    const updates = {
+      profilePictureSource: 'default', // The user selected a default image
+      profilePicture: profileImages[index], // Update the profile picture with the selected image URL
+    }
+    update(userRef, updates)
   }
 
   const [image, setImage] = useState(null)
@@ -151,6 +162,7 @@ const EditProfile = ({ navigation }) => {
       const userRef = ref(db, `users/${auth.currentUser.uid}`) // link with the current user ID
       const updates = {
         profilePicture: imgbbResponse.data.url, // The ImgBB URL of the uploaded image
+        profilePictureSource: 'uploaded',
       }
       update(userRef, updates)
 
@@ -241,7 +253,12 @@ const EditProfile = ({ navigation }) => {
       </View>
       <ScrollView style={{ padding: 10 }}>
         <View style={{ alignItems: 'center', marginVertical: 22 }}>
-          <TouchableOpacity onPress={() => setShowImagePicker(true)}>
+          <TouchableOpacity
+            onPress={() => {
+              console.log('Profile image pressed')
+              setShowImagePicker(true)
+            }}
+          >
             {image ? (
               <Image
                 source={{ uri: image }}
@@ -304,7 +321,7 @@ const EditProfile = ({ navigation }) => {
                     }}
                   >
                     <Image
-                      source={image}
+                      source={{ uri: image }}
                       style={{
                         width: 100,
                         height: 100,
