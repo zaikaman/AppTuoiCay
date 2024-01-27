@@ -96,7 +96,6 @@ const ChatScreen = ({ navigation, route }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.userName}>{route.params.friendName}</Text>
       <GiftedChat
         messages={messages}
         showAvatarForEveryMessage={true}
@@ -107,6 +106,7 @@ const ChatScreen = ({ navigation, route }) => {
           avatar: auth?.currentUser?.photoURL,
         }}
       />
+      <Text style={styles.userName}>{route.params.friendName}</Text>
     </View>
   )
 }
