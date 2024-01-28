@@ -177,12 +177,14 @@ export default function FriendsList({ navigation }) {
       // Get data for each friend
       const friendsRequestPromises = userData.friends_Request.map((friend) => getFriendData(friend))
       const friendsRequest = await Promise.all(friendsRequestPromises)
-      return friendsRequest
+      // Only return the fullNames of the friends
+      return friendsRequest.map((friend) => friend.fullName)
     } catch (error) {
       console.error('Error in getAllFriendsData: ', error)
       throw error
     }
   }
+
   // Chấp nhận lời mời kết bạn
   const onHandleAccept = async (requestName) => {
     try {
@@ -301,7 +303,15 @@ export default function FriendsList({ navigation }) {
       const friendsData = await getAllFriendsData()
       setElements(friendsData)
     }
+
+    // Call fetchData immediately
     fetchData()
+
+    // Then set up an interval to call fetchData every 3 seconds
+    const intervalId = setInterval(fetchData, 3000)
+
+    // Don't forget to clear the interval when the component unmounts
+    return () => clearInterval(intervalId)
   }, [])
 
   // Logic hàm (FriendsRequest) : dưới DB sẽ tồn tại 1 trường friends_Request : []
