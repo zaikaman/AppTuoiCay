@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react'
-import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions, FlatList, Alert } from 'react-native'
+import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions, FlatList, Alert, Platform } from 'react-native'
 import ProgressBarAnimated from 'react-native-progress-bar-animated'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { getDatabase, ref, get, set, update } from 'firebase/database'
@@ -545,18 +545,18 @@ const styles = StyleSheet.create({
   price: {
     fontSize: 14,
     marginTop: 5,
-    fontFamily: 'Cochin',
+    fontFamily: Platform.OS === 'ios' ? 'Cochin' : 'monospace',
   },
   description: {
     fontSize: 12,
     marginVertical: 3,
     textAlign: 'center',
-    fontFamily: 'Cochin',
+    fontFamily: Platform.OS === 'ios' ? 'Cochin' : 'monospace', // Sử dụng 'Cochin' cho iOS và 'Roboto' cho Android
   },
   level: {
     fontSize: 14,
     marginVertical: 3,
-    fontFamily: 'Cochin',
+    fontFamily: Platform.OS === 'ios' ? 'Cochin' : 'monospace',
   },
   progressBar: {
     marginVertical: 5,
