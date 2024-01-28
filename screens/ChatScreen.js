@@ -93,11 +93,11 @@ const ChatScreen = ({ navigation, route }) => {
         ? Object.values(data)
             .map((m) => ({
               ...m,
-              createdAt: m.createdAt && m.createdAt.seconds ? new Date(m.createdAt.seconds * 1000) : new Date(),
+              createdAt: m.createdAt ? new Date(m.createdAt) : null,
             }))
-            .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime()) // Reverse the sort order
+            .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
         : []
-      setMessages(firebaseMessages.reverse()) // Reverse the array here
+      setMessages(firebaseMessages)
     })
 
     return () => {
