@@ -129,7 +129,7 @@ export default function FriendsList({ navigation }) {
 
         if (userData.listFriend_byFullName.includes(searchName)) {
           setSearchName('')
-          return Alert.alert('Thêm bạn bè', 'Người dùng này đã là bạn bè')
+          return Alert.alert('Add friend', 'This user is already a friend')
         } else {
           // sendRequest
           const friendSnapshot = await get(friendRef)
@@ -147,15 +147,15 @@ export default function FriendsList({ navigation }) {
             }
             update(friendRef, friendUpdates)
             setSearchName('')
-            return Alert.alert('Thêm bạn bè', 'Đã gửi lời mời kết bạn')
+            return Alert.alert('Add friend', 'Friend request sent')
           } else {
             setSearchName('')
-            Alert.alert('Thêm bạn bè', 'Ngươi dùng này đã được được gửi lời mời kết bạn')
+            Alert.alert('Add friend', 'You have already sent a friend request to this user')
           }
         }
       } else {
         setSearchName('')
-        return Alert.alert('Thêm bạn bè', 'Không tìm thấy người dùng')
+        return Alert.alert('Add friend', 'This user does not exist')
       }
     } catch (error) {
       console.error('Error in onHandleAddFr: ', error)
