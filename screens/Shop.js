@@ -1,38 +1,46 @@
-import React, { useState, useContext, useEffect } from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions, FlatList, Alert } from 'react-native';
-import ProgressBarAnimated from 'react-native-progress-bar-animated';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { getDatabase, ref, get, set, update } from 'firebase/database';
-import { COLORS } from '../constants';
-import Modal from 'react-native-modal';
+import React, { useState, useContext, useEffect } from 'react'
+import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions, FlatList, Alert } from 'react-native'
+import ProgressBarAnimated from 'react-native-progress-bar-animated'
+import { SafeAreaView } from 'react-native-safe-area-context'
+import { getDatabase, ref, get, set, update } from 'firebase/database'
+import { COLORS } from '../constants'
+import Modal from 'react-native-modal'
 // Import images
-import rabbitlvl1 from '../assets/images/rabbitlvl1.png';
-import rabbitlvl2 from '../assets/images/rabbitlvl2.png';
-import foxlvl1 from '../assets/images/foxlvl1.png';
-import foxlvl2 from '../assets/images/foxlvl2.png';
-import birdlvl1 from '../assets/images/birdlvl1.png';
-import birdlvl2 from '../assets/images/birdlvl2.png';
-import monkeylvl1 from '../assets/images/monkeylvl1.png';
-import monkeylvl2 from '../assets/images/monkeylvl2.png';
-import elephantlvl1 from '../assets/images/elephantlvl1.png';
-import elephantlvl2 from '../assets/images/elephantlvl2.png';
-import horselvl1 from '../assets/images/horselvl1.png';
-import horselvl2 from '../assets/images/horselvl2.png';
-import wolflvl1 from '../assets/images/wolflvl1.png';
-import wolflvl2 from '../assets/images/wolflvl2.png';
-import background1 from '../assets/images/background1.png';
-import background2 from '../assets/images/background2.png';
-import background3 from '../assets/images/background3.png';
-import background4 from '../assets/images/background4.png';
-import background5 from '../assets/images/background5.png';
-import background6 from '../assets/images/background6.png';
-import waiting from '../assets/images/waiting.png';
-import { ShopContext } from './ShopContext';
-import { getUserData, updateUserData } from '../utils/actions/userActions';
-import { getAuth } from 'firebase/auth';
+import rabbitlvl1 from '../assets/images/rabbitlvl1.png'
+import rabbitlvl2 from '../assets/images/rabbitlvl2.png'
+import foxlvl1 from '../assets/images/foxlvl1.png'
+import foxlvl2 from '../assets/images/foxlvl2.png'
+import birdlvl1 from '../assets/images/birdlvl1.png'
+import birdlvl2 from '../assets/images/birdlvl2.png'
+import monkeylvl1 from '../assets/images/monkeylvl1.png'
+import monkeylvl2 from '../assets/images/monkeylvl2.png'
+import elephantlvl1 from '../assets/images/elephantlvl1.png'
+import elephantlvl2 from '../assets/images/elephantlvl2.png'
+import horselvl1 from '../assets/images/horselvl1.png'
+import horselvl2 from '../assets/images/horselvl2.png'
+import wolflvl1 from '../assets/images/wolflvl1.png'
+import wolflvl2 from '../assets/images/wolflvl2.png'
+import background1 from '../assets/images/background1.png'
+import background2 from '../assets/images/background2.png'
+import background3 from '../assets/images/background3.png'
+import background4 from '../assets/images/background4.png'
+import background5 from '../assets/images/background5.png'
+import background6 from '../assets/images/background6.png'
+import waiting from '../assets/images/waiting.png'
+import { ShopContext } from './ShopContext'
+import { getUserData, updateUserData } from '../utils/actions/userActions'
+import { getAuth } from 'firebase/auth'
 
-require('../assets/images/backShop.png');
+require('../assets/images/backShop.png')
 
+// Get the screen dimensions
+const screenWidth = Dimensions.get('window').width
+const screenHeight = Dimensions.get('window').height
+
+const backButtonPosition = {
+  top: screenHeight * 0.01,
+  left: screenWidth * -0.38,
+}
 
 const images = {
   'Rabbit lv1 :\n +1% watering perfomance': rabbitlvl1,
@@ -55,7 +63,7 @@ const images = {
   'Background 4': background4,
   'Background 5': background5,
   'Background 6': background6,
-};
+}
 
 // Mapping between item.id and the corresponding field in the database
 const idToField = {
@@ -77,10 +85,9 @@ const idToField = {
   28: 'Background4',
   29: 'Background5',
   30: 'Background6',
-};
+}
 
 const ShopItem = ({ item, onToggleAccept, onBuyItem }) => (
-
   <View style={styles.itemContainer}>
     <Image
       source={item.description && images[item.description] ? images[item.description] : waiting}
@@ -113,78 +120,78 @@ const ShopItem = ({ item, onToggleAccept, onBuyItem }) => (
       </TouchableOpacity>
     )}
   </View>
-);
+)
 
 const Shop = ({ navigation }) => {
-  const { setSelectedItem } = useContext(ShopContext);
-  const [activeTab, setActiveTab] = useState('background');
-  const [acceptedItems, setAcceptedItems] = useState({});
-  const [userData, setUserData] = useState(null);
+  const { setSelectedItem } = useContext(ShopContext)
+  const [activeTab, setActiveTab] = useState('background')
+  const [acceptedItems, setAcceptedItems] = useState({})
+  const [userData, setUserData] = useState(null)
 
   const backHome = () => {
-    navigation.navigate('Home');
-  };
+    navigation.navigate('Home')
+  }
 
-  const auth = getAuth();
-  const [isConfirmModalVisible, setConfirmModalVisible] = useState(false);
+  const auth = getAuth()
+  const [isConfirmModalVisible, setConfirmModalVisible] = useState(false)
 
-  const showConfirmModal = () => setConfirmModalVisible(true);
-  const hideConfirmModal = () => setConfirmModalVisible(false);
-  const [isBuyingConfirmed, setIsBuyingConfirmed] = useState(false);
-  
+  const showConfirmModal = () => setConfirmModalVisible(true)
+  const hideConfirmModal = () => setConfirmModalVisible(false)
+  const [isBuyingConfirmed, setIsBuyingConfirmed] = useState(false)
+
   const handleConfirmBuy = async (itemPrice) => {
     try {
       // Trừ tiền và cập nhật thông tin về sản phẩm đã mua
-      const userId = auth.currentUser.uid;
-      const userRef = ref(getDatabase(), `users/${userId}`);
-      const userSnapshot = await get(userRef);
-      const userData = userSnapshot.val();
+      const userId = auth.currentUser.uid
+      const userRef = ref(getDatabase(), `users/${userId}`)
+      const userSnapshot = await get(userRef)
+      const userData = userSnapshot.val()
 
       // Kiểm tra xem có đủ tiền không
-      const userMoney = userData.totalWatered; // Lấy tổng tiền của người dùng
+      const userMoney = userData.totalWatered // Lấy tổng tiền của người dùng
 
       if (userMoney < itemPrice) {
         // Hiển thị cảnh báo khi tiền không đủ
         // Nếu bạn sử dụng một thư viện cảnh báo như react-native-modal, hãy hiển thị cảnh báo ở đây
-        Alert.alert("You don't have enough money!");
-        return;
-    }    
-      
+        Alert.alert("You don't have enough money!")
+        return
+      }
+
       // Hiển thị cảnh báo khi người dùng xác nhận mua
-      const confirmBuy = ('Are you sure you want to buy this product?');
+      const confirmBuy = 'Are you sure you want to buy this product?'
 
       if (confirmBuy) {
         // Trừ tiền và cập nhật thông tin về sản phẩm đã mua
-        const newMoney = userMoney - itemPrice;
-        const boughtField = `${idToField[item.id]}Bought`; // Correct field for the bought status
-      
+        const newMoney = userMoney - itemPrice
+        const boughtField = `${idToField[item.id]}Bought` // Correct field for the bought status
+
         // Update the new bought field and deduct the money
-        const updateData = { totalWatered: newMoney };
-        updateData[boughtField] = 'Yes';
-      
-        await update(userRef, updateData);
-      
+        const updateData = { totalWatered: newMoney }
+        updateData[boughtField] = 'Yes'
+
+        await update(userRef, updateData)
+
         // Cập nhật state
         setAcceptedItems((prevItems) => {
-          const newAcceptedItems = { ...prevItems };
-          newAcceptedItems[item.id] = { tab: activeTab, accepted: true }; // Set accepted to true here
-          return newAcceptedItems;
-        });
+          const newAcceptedItems = { ...prevItems }
+          newAcceptedItems[item.id] = { tab: activeTab, accepted: true } // Set accepted to true here
+          return newAcceptedItems
+        })
         setUserData((prevUserData) => {
-          const newUserData = { ...prevUserData };
-          newUserData[boughtField] = 'Yes';
-          return newUserData;
-        });
+          const newUserData = { ...prevUserData }
+          newUserData[boughtField] = 'Yes'
+          return newUserData
+        })
         // Cập nhật trạng thái xác nhận mua
-        setIsBuyingConfirmed(true);
-      
+        setIsBuyingConfirmed(true)
+
         // Show the confirmation modal
         // showConfirmModal();
-      }      
+      }
     } catch (error) {
-      console.error('Error buying item', error);
+      console.error('Error buying item', error)
     }
-  };
+  }
 
   const tabData = {
     background: [
@@ -203,7 +210,13 @@ const Shop = ({ navigation }) => {
       { id: 7, price: '15.00 $MTREE', description: 'Bird lv1 :\n +7% watering perfomance', level: 5, progress: 65 },
       { id: 8, price: '25.00 $MTREE', description: 'Bird lv2 :\n +10% watering perfomance', level: 6, progress: 50 },
       { id: 9, price: '28.00 $MTREE', description: 'Monkey lv1 :\n +13% watering perfomance', level: 11, progress: 52 },
-      { id: 10, price: '35.00 $MTREE', description: 'Monkey lv2 :\n +17% watering perfomance', level: 11, progress: 99 },
+      {
+        id: 10,
+        price: '35.00 $MTREE',
+        description: 'Monkey lv2 :\n +17% watering perfomance',
+        level: 11,
+        progress: 99,
+      },
       { id: 13, price: '50.00 $MTREE', description: 'Horse lv1 :\n +31% watering perfomance', level: 9, progress: 30 },
       { id: 14, price: '55.00 $MTREE', description: 'Horse lv2 :\n +37% watering perfomance', level: 10, progress: 20 },
       { id: 15, price: '70.00 $MTREE', description: 'Wolf lv1 :\n +43% watering perfomance', level: 11, progress: 10 },
@@ -219,50 +232,50 @@ const Shop = ({ navigation }) => {
       { id: 23, price: '18.00 $MTREE', description: 'Decoration 7', level: 2, progress: 70 },
       { id: 24, price: '18.00 $MTREE', description: 'Decoration 8', level: 2, progress: 70 },
     ],
-  };
+  }
 
   useEffect(() => {
-    let newAcceptedItems = {};
+    let newAcceptedItems = {}
     // Đặt giá trị ban đầu là 'No' cho tất cả các mục
     Object.keys(idToField).forEach((itemId) => {
-      newAcceptedItems[itemId] = { tab: idToField[itemId].toLowerCase(), accepted: false };
-    });
+      newAcceptedItems[itemId] = { tab: idToField[itemId].toLowerCase(), accepted: false }
+    })
 
     const fetchData = async () => {
       try {
-        const user = auth.currentUser;
+        const user = auth.currentUser
         if (user) {
-          const userData = await getUserData(user.uid);
+          const userData = await getUserData(user.uid)
 
           // Kiểm tra xem userData có tồn tại và không phải là null
           if (userData) {
-            setUserData(userData); // Lưu userData vào state
-            let newAcceptedItems = { ...acceptedItems };
+            setUserData(userData) // Lưu userData vào state
+            let newAcceptedItems = { ...acceptedItems }
 
             // Animals
             if (userData.Rabbitlvl1Applied === 'Yes') {
-              newAcceptedItems[3] = { tab: 'animals', accepted: true };
+              newAcceptedItems[3] = { tab: 'animals', accepted: true }
             }
             if (userData.Rabbitlvl2Applied === 'Yes') {
-              newAcceptedItems[4] = { tab: 'animals', accepted: true };
+              newAcceptedItems[4] = { tab: 'animals', accepted: true }
             }
             if (userData.Foxlvl1Applied === 'Yes') {
-              newAcceptedItems[5] = { tab: 'animals', accepted: true };
+              newAcceptedItems[5] = { tab: 'animals', accepted: true }
             }
             if (userData.Foxlvl2Applied === 'Yes') {
-              newAcceptedItems[6] = { tab: 'animals', accepted: true };
+              newAcceptedItems[6] = { tab: 'animals', accepted: true }
             }
             if (userData.Birdlvl1Applied === 'Yes') {
-              newAcceptedItems[7] = { tab: 'animals', accepted: true };
+              newAcceptedItems[7] = { tab: 'animals', accepted: true }
             }
             if (userData.Birdlvl2Applied === 'Yes') {
-              newAcceptedItems[8] = { tab: 'animals', accepted: true };
+              newAcceptedItems[8] = { tab: 'animals', accepted: true }
             }
             if (userData.Monkeylvl1Applied === 'Yes') {
-              newAcceptedItems[9] = { tab: 'animals', accepted: true };
+              newAcceptedItems[9] = { tab: 'animals', accepted: true }
             }
             if (userData.Monkeylvl2Applied === 'Yes') {
-              newAcceptedItems[10] = { tab: 'animals', accepted: true };
+              newAcceptedItems[10] = { tab: 'animals', accepted: true }
             }
             // if (userData.Elephantlvl1Applied === 'Yes') {
             //   newAcceptedItems[11] = { tab: 'animals', accepted: true };
@@ -271,115 +284,110 @@ const Shop = ({ navigation }) => {
             //   newAcceptedItems[12] = { tab: 'animals', accepted: true };
             // }
             if (userData.Horselvl1Applied === 'Yes') {
-              newAcceptedItems[13] = { tab: 'animals', accepted: true };
+              newAcceptedItems[13] = { tab: 'animals', accepted: true }
             }
             if (userData.Horselvl2Applied === 'Yes') {
-              newAcceptedItems[14] = { tab: 'animals', accepted: true };
+              newAcceptedItems[14] = { tab: 'animals', accepted: true }
             }
             if (userData.Wolflvl1Applied === 'Yes') {
-              newAcceptedItems[15] = { tab: 'animals', accepted: true };
+              newAcceptedItems[15] = { tab: 'animals', accepted: true }
             }
             if (userData.Horselvl2Applied === 'Yes') {
-              newAcceptedItems[16] = { tab: 'animals', accepted: true };
+              newAcceptedItems[16] = { tab: 'animals', accepted: true }
             }
 
             // Backgrounds
             if (userData.Background1Applied === 'Yes') {
-              newAcceptedItems[25] = { tab: 'background', accepted: true };
+              newAcceptedItems[25] = { tab: 'background', accepted: true }
             }
             if (userData.Background2Applied === 'Yes') {
-              newAcceptedItems[26] = { tab: 'background', accepted: true };
+              newAcceptedItems[26] = { tab: 'background', accepted: true }
             }
             if (userData.Background3Applied === 'Yes') {
-              newAcceptedItems[27] = { tab: 'background', accepted: true };
+              newAcceptedItems[27] = { tab: 'background', accepted: true }
             }
             if (userData.Background4Applied === 'Yes') {
-              newAcceptedItems[28] = { tab: 'background', accepted: true };
+              newAcceptedItems[28] = { tab: 'background', accepted: true }
             }
             if (userData.Background5Applied === 'Yes') {
-              newAcceptedItems[29] = { tab: 'background', accepted: true };
+              newAcceptedItems[29] = { tab: 'background', accepted: true }
             }
             if (userData.Background6Applied === 'Yes') {
-              newAcceptedItems[30] = { tab: 'background', accepted: true };
+              newAcceptedItems[30] = { tab: 'background', accepted: true }
             }
             // Add similar blocks for other backgrounds here...
 
-            setAcceptedItems(newAcceptedItems);
+            setAcceptedItems(newAcceptedItems)
           }
         }
       } catch (error) {
-        console.error('Error fetching data', error);
+        console.error('Error fetching data', error)
       }
-    };
-    setAcceptedItems(newAcceptedItems);
-    fetchData();
-  }, []
-  );
+    }
+    setAcceptedItems(newAcceptedItems)
+    fetchData()
+  }, [])
 
   const onBuyItem = async (item) => {
     try {
-      const userId = auth.currentUser.uid;
-      const userRef = ref(getDatabase(), `users/${userId}`);
-      const userSnapshot = await get(userRef);
-      const userData = userSnapshot.val();
-  
+      const userId = auth.currentUser.uid
+      const userRef = ref(getDatabase(), `users/${userId}`)
+      const userSnapshot = await get(userRef)
+      const userData = userSnapshot.val()
+
       // Check if the user has enough money
-      const itemPrice = parseFloat(item.price.split(' ')[0]); // Get the price of the item
-      const userMoney = userData.totalWatered; // Get the total money of the user
-  
+      const itemPrice = parseFloat(item.price.split(' ')[0]) // Get the price of the item
+      const userMoney = userData.totalWatered // Get the total money of the user
+
       if (userMoney < itemPrice) {
         // Show an alert when the user doesn't have enough money
-        Alert.alert("You don't have enough money!");
-        return;
+        Alert.alert("You don't have enough money!")
+        return
       }
-  
+
       // Show an alert when the user confirms the purchase
-      Alert.alert(
-        "Confirm Purchase",
-        "Are you sure you want to buy this product?",
-        [
-          {
-            text: "No",
-            onPress: () => console.log("Purchase cancelled"),
-            style: "cancel"
+      Alert.alert('Confirm Purchase', 'Are you sure you want to buy this product?', [
+        {
+          text: 'No',
+          onPress: () => console.log('Purchase cancelled'),
+          style: 'cancel',
+        },
+        {
+          text: 'Yes',
+          onPress: async () => {
+            // Deduct the money and update the information about the purchased item
+            const newMoney = userMoney - itemPrice
+            const boughtField = `${idToField[item.id]}Bought` // Correct field for the bought status
+
+            // Update the new bought field and deduct the money
+            const updateData = { totalWatered: newMoney }
+            updateData[boughtField] = 'Yes'
+
+            await update(userRef, updateData)
+
+            // Update state
+            setAcceptedItems((prevItems) => {
+              const newAcceptedItems = { ...prevItems }
+              newAcceptedItems[item.id] = { tab: activeTab, accepted: false } // Set accepted to false here
+              return newAcceptedItems
+            })
+            setUserData((prevUserData) => {
+              const newUserData = { ...prevUserData }
+              newUserData[boughtField] = 'Yes'
+              return newUserData
+            })
+            // Update the purchase confirmation status
+            setIsBuyingConfirmed(true)
+
+            // Show the confirmation modal
+            // showConfirmModal();
           },
-          {
-            text: "Yes", 
-            onPress: async () => {
-              // Deduct the money and update the information about the purchased item
-              const newMoney = userMoney - itemPrice;
-              const boughtField = `${idToField[item.id]}Bought`; // Correct field for the bought status
-  
-              // Update the new bought field and deduct the money
-              const updateData = { totalWatered: newMoney };
-              updateData[boughtField] = 'Yes';
-  
-              await update(userRef, updateData);
-  
-              // Update state
-              setAcceptedItems((prevItems) => {
-                const newAcceptedItems = { ...prevItems };
-                newAcceptedItems[item.id] = { tab: activeTab, accepted: false }; // Set accepted to false here
-                return newAcceptedItems;
-              });
-              setUserData((prevUserData) => {
-                const newUserData = { ...prevUserData };
-                newUserData[boughtField] = 'Yes';
-                return newUserData;
-              });
-              // Update the purchase confirmation status
-              setIsBuyingConfirmed(true);
-  
-              // Show the confirmation modal
-              // showConfirmModal();
-            }
-          }
-        ]
-      );
+        },
+      ])
     } catch (error) {
-      console.error('Error buying item', error);
+      console.error('Error buying item', error)
     }
-  };   
+  }
 
   const renderTabs = () => (
     <FlatList
@@ -392,7 +400,7 @@ const Shop = ({ navigation }) => {
           onPress={() => setActiveTab(item)}
         >
           {item === 'shop' ? (
-            <Image source={require("../assets/images/shop.png")} style={styles.shopIcon} />
+            <Image source={require('../assets/images/shop.png')} style={styles.shopIcon} />
           ) : (
             <Text style={{ color: activeTab === item ? '#FFFFFF' : 'purple', textAlign: 'center' }}>{item}</Text>
           )}
@@ -400,32 +408,31 @@ const Shop = ({ navigation }) => {
       )}
       keyExtractor={(item) => item}
     />
-  );
+  )
 
   const onToggleAccept = async (item) => {
-    let newAcceptedItems = { ...acceptedItems };
+    let newAcceptedItems = { ...acceptedItems }
 
     // Toggle the acceptance state of the item
     if (newAcceptedItems[item.id]) {
-      newAcceptedItems[item.id].accepted = !newAcceptedItems[item.id].accepted;
+      newAcceptedItems[item.id].accepted = !newAcceptedItems[item.id].accepted
     } else {
-      newAcceptedItems[item.id] = { tab: activeTab, accepted: true };
+      newAcceptedItems[item.id] = { tab: activeTab, accepted: true }
     }
 
     // Update the active tab
-    newAcceptedItems[activeTab] = newAcceptedItems[activeTab] === item.id ? undefined : item.id;
+    newAcceptedItems[activeTab] = newAcceptedItems[activeTab] === item.id ? undefined : item.id
 
     // Update the database
     if (idToField[item.id]) {
-      const applied = newAcceptedItems[item.id].accepted ? 'Yes' : 'No';
-      await updateUserData(auth.currentUser.uid, { [`${idToField[item.id]}Applied`]: applied });
+      const applied = newAcceptedItems[item.id].accepted ? 'Yes' : 'No'
+      await updateUserData(auth.currentUser.uid, { [`${idToField[item.id]}Applied`]: applied })
     }
 
     // Update the selected item and the accepted items
-    setSelectedItem(item);
-    setAcceptedItems(newAcceptedItems);
-  };
-
+    setSelectedItem(item)
+    setAcceptedItems(newAcceptedItems)
+  }
 
   const renderItem = ({ item }) => (
     <ShopItem
@@ -438,11 +445,10 @@ const Shop = ({ navigation }) => {
     />
   )
 
-
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.primary, }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.primary }}>
       <View style={styles.header}>
-        <Image source={require("../assets/images/shop2.png")} style={styles.shopIcon} />
+        <Image source={require('../assets/images/shop3.png')} style={styles.shopIcon} />
         {renderTabs()}
       </View>
       <View style={styles.container}>
@@ -464,10 +470,10 @@ const Shop = ({ navigation }) => {
           numColumns={2}
           contentContainerStyle={styles.itemsContainer}
           ListFooterComponent={<View style={{ height: 350 }} />}
-        /> 
+        />
         <TouchableOpacity onPress={backHome}>
-        <Image source={require('../assets/images/backShop.png')} style={styles.backShopImage} />
-      </TouchableOpacity>
+          <Image source={require('../assets/images/backShop.png')} style={styles.backShopImage} />
+        </TouchableOpacity>
         <Modal isVisible={isConfirmModalVisible}>
           <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
             <Text>Are you sure you want to buy this product?</Text>
@@ -485,10 +491,10 @@ const Shop = ({ navigation }) => {
         </Modal>
       </View>
     </SafeAreaView>
-  );
-};
+  )
+}
 
-const { width } = Dimensions.get('window');
+const { width } = Dimensions.get('window')
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -503,7 +509,7 @@ const styles = StyleSheet.create({
   },
   shopIcon: {
     width: width,
-    height: 120,
+    height: 190,
     alignItems: 'center',
   },
   tabsContainer: {
@@ -539,15 +545,18 @@ const styles = StyleSheet.create({
   price: {
     fontSize: 14,
     marginTop: 5,
+    fontFamily: 'Cochin',
   },
   description: {
     fontSize: 12,
     marginVertical: 3,
     textAlign: 'center',
+    fontFamily: 'Cochin',
   },
   level: {
     fontSize: 14,
     marginVertical: 3,
+    fontFamily: 'Cochin',
   },
   progressBar: {
     marginVertical: 5,
@@ -587,11 +596,11 @@ const styles = StyleSheet.create({
   backShopImage: {
     width: 65, // Thay đổi kích thước hình ảnh theo ý muốn
     height: 53, // Thay đổi kích thước hình ảnh theo ý muốn
-    bottom: 560,
-    right: 150,
+    top: backButtonPosition.top,
+    left: backButtonPosition.left,
     marginVertical: 10,
     tintColor: COLORS.background, // Chỉnh màu của hình ảnh thành màu trắng
-  }
-});
+  },
+})
 
-export default Shop;
+export default Shop
