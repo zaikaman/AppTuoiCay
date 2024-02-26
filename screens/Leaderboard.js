@@ -47,8 +47,8 @@ export default class AvatarAndClickable extends Component {
       evenRowColor: '#edfcf9',
       renderItem: (item, index) => {
         return (
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Text style={{ width: 30 }}>{index + 1}</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20 }}>
+            <Text style={{ width: 30, paddingVertical: 25 }}>{index + 1}</Text>
             <Image
               source={{ uri: item.iconUrl }}
               style={{ width: 50, height: 50, borderRadius: 25, marginRight: 15 }}
