@@ -1,16 +1,13 @@
 import React, { useState, useEffect } from 'react'
-import { View, Text, TouchableOpacity, ScrollView, Image, TextInput, Dimensions, Button } from 'react-native'
+import { View, Text, TouchableOpacity, ScrollView, Image, TextInput, Dimensions, Button, StatusBar } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { COLORS, FONTS } from '../constants'
-import { MaterialIcons, FontAwesome5 } from '@expo/vector-icons'
+import { MaterialIcons, AntDesign } from '@expo/vector-icons'
 import { getDatabase, ref, onValue, update } from 'firebase/database'
 import { getFirebaseApp } from '../utils/firebaseHelper'
 import { getAuth } from 'firebase/auth'
-import { getStorage } from 'firebase/storage'
-import { ref as sRef, put } from 'firebase/storage'
 import DatePicker, { getFormatedDate } from 'react-native-modern-datepicker'
 import * as ImagePicker from 'expo-image-picker'
-import Modal from 'react-native-modal'
 
 const profileImages = [
   'https://i.ibb.co/sjpJCcf/image1.png',
@@ -21,7 +18,8 @@ const profileImages = [
   'https://i.ibb.co/HTyM4CW/image6.png',
 ]
 
-const EditProfile = ({ navigation }) => {
+const User = ({ navigation }) => {
+  const [image, setImage] = useState(null)
   useEffect(() => {
     const app = getFirebaseApp()
     const db = getDatabase(app)
@@ -42,6 +40,7 @@ const EditProfile = ({ navigation }) => {
       }
       if (data.profilePicture) {
         setSelectedImage({ uri: data.profilePicture }) // Use the ImgBB URL
+        setImage({ uri: data.profilePicture })
       }
       if (data.profilePictureIndex !== undefined) {
         setSelectedImageIndex(data.profilePictureIndex)
@@ -51,24 +50,6 @@ const EditProfile = ({ navigation }) => {
         setImage(data.profilePictureFromUser)
       }
     })
-  }, [])
-
-  useEffect(() => {
-    const app = getFirebaseApp()
-    const db = getDatabase(app)
-    const auth = getAuth(app)
-    const userRef = ref(db, `users/${auth.currentUser.uid}`) // link with the current user ID
-
-    // Set up a listener for the profilePicture field
-    const unsubscribe = onValue(userRef, (snapshot) => {
-      const data = snapshot.val()
-      if (data.profilePicture) {
-        setSelectedImage({ uri: data.profilePicture }) // Use the ImgBB URL
-      }
-    })
-
-    // Clean up the listener when the component is unmounted
-    return unsubscribe
   }, [])
 
   const handleSaveChange = () => {
@@ -129,7 +110,6 @@ const EditProfile = ({ navigation }) => {
     update(userRef, updates)
   }
 
-  const [image, setImage] = useState(null)
   const handlePickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -170,295 +150,130 @@ const EditProfile = ({ navigation }) => {
     }
   }
 
-  function renderDatePicker() {
-    return (
-      <Modal animationType="slide" transparent={true} visible={openStartDatePicker}>
-        <View
-          style={{
-            flex: 1,
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <View
-            style={{
-              margin: 20,
-              backgroundColor: COLORS.primary,
-              alignItems: 'center',
-              justifyContent: 'center',
-              borderRadius: 20,
-              padding: 35,
-              width: '90%',
-              shadowColor: '#000',
-              shadowOffset: {
-                width: 0,
-                height: 2,
-              },
-              shadowOpacity: 0.25,
-              shadowRadius: 4,
-              elevation: 5,
-            }}
-          >
-            <DatePicker
-              mode="calendar"
-              minimumDate={startDate}
-              selected={startedDate}
-              onDateChanged={handleChangeStartDate}
-              onSelectedChange={(date) => setSelectedStartDate(date)}
-              options={{
-                backgroundColor: COLORS.primary,
-                textHeaderColor: '#469ab6',
-                textDefaultColor: COLORS.white,
-                selectedTextColor: COLORS.white,
-                mainColor: '#469ab6',
-                textSecondaryColor: COLORS.white,
-                borderColor: 'rgba(122,146,165,0.1)',
-              }}
-            />
-
-            <TouchableOpacity onPress={handleOnPressStartDate}>
-              <Text style={{ ...FONTS.body3, color: COLORS.white }}>Close</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
-    )
-  }
-
   return (
     <SafeAreaView
       style={{
         flex: 1,
         backgroundColor: COLORS.white,
-        paddingHorizontal: 22,
       }}
     >
+      <StatusBar animated={true} barStyle="dark-content" hidden={false} />
       <View
         style={{
-          marginHorizontal: 12,
           flexDirection: 'row',
           justifyContent: 'center',
+          alignItems: 'center',
+          width: '100%',
+          height: 40,
+          backgroundColor: COLORS.white,
         }}
       >
         <TouchableOpacity
           onPress={() => navigation.goBack()}
           style={{
             position: 'absolute',
-            left: 0,
+            left: 20,
           }}
         >
-          <MaterialIcons name="keyboard-arrow-left" size={24} color={COLORS.black} />
+          <MaterialIcons name="keyboard-arrow-left" size={34} color={COLORS.black} />
         </TouchableOpacity>
-        <Text style={{ ...FONTS.h3 }}>Edit Profile</Text>
-      </View>
-      <ScrollView style={{ padding: 10 }}>
-        <View style={{ alignItems: 'center', marginVertical: 22 }}>
-          <TouchableOpacity
-            onPress={() => {
-              console.log('Profile image pressed')
-              setShowImagePicker(true)
-            }}
-          >
-            {image ? (
-              <Image
-                source={{ uri: image }}
-                style={{
-                  height: 170,
-                  width: 170,
-                  borderRadius: 85,
-                  borderWidth: 2,
-                  borderColor: COLORS.primary,
-                }}
-              />
-            ) : (
-              <Image
-                source={selectedImage}
-                style={{
-                  height: 170,
-                  width: 170,
-                  borderRadius: 85,
-                  borderWidth: 2,
-                  borderColor: COLORS.primary,
-                }}
-              />
-            )}
-
-            <View
-              style={{
-                position: 'absolute',
-                bottom: 0,
-                right: 10,
-              }}
-            >
-              <TouchableOpacity onPress={handlePickImage}>
-                <MaterialIcons name="photo-camera" size={32} color={COLORS.primary} />
-              </TouchableOpacity>
-            </View>
-          </TouchableOpacity>
-        </View>
-
-        {showImagePicker && (
-          <Modal
-            animationType="slide"
-            transparent={true}
-            visible={showImagePicker}
-            onRequestClose={() => setShowImagePicker(false)}
-          >
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  flexWrap: 'wrap',
-                  justifyContent: 'center',
-                }}
-              >
-                {profileImages.map((image, index) => (
-                  <TouchableOpacity
-                    key={index}
-                    onPress={() => {
-                      handleImageSelection(index)
-                      setShowImagePicker(false)
-                    }}
-                  >
-                    <Image
-                      source={{ uri: image }}
-                      style={{
-                        width: 100,
-                        height: 100,
-                        margin: 10,
-                      }}
-                    />
-                  </TouchableOpacity>
-                ))}
-              </View>
-            </View>
-          </Modal>
-        )}
-
-        <View>
-          <View
-            style={{
-              flexDirection: 'column',
-              marginBottom: 6,
-            }}
-          >
-            <Text style={{ ...FONTS.h4 }}>Name</Text>
-            <View
-              style={{
-                height: 44,
-                width: '100%',
-                borderColor: COLORS.secondaryGray,
-                borderWidth: 1,
-                borderRadius: 4,
-                marginVertical: 6,
-                justifyContent: 'center',
-                paddingLeft: 8,
-              }}
-            >
-              <TextInput value={name} onChangeText={(value) => setName(value)} editable={true} />
-            </View>
-          </View>
-
-          <View
-            style={{
-              flexDirection: 'column',
-              marginBottom: 6,
-            }}
-          >
-            <Text style={{ ...FONTS.h4 }}>Email</Text>
-            <View
-              style={{
-                height: 44,
-                width: '100%',
-                borderColor: COLORS.secondaryGray,
-                borderWidth: 1,
-                borderRadius: 4,
-                marginVertical: 6,
-                justifyContent: 'center',
-                paddingLeft: 8,
-              }}
-            >
-              <TextInput value={email} onChangeText={(value) => setEmail(value)} editable={true} />
-            </View>
-          </View>
-
-          <View
-            style={{
-              flexDirection: 'column',
-              marginBottom: 6,
-            }}
-          >
-            <Text style={{ ...FONTS.h4 }}>Date of Birth</Text>
-            <TouchableOpacity
-              onPress={handleOnPressStartDate}
-              style={{
-                height: 44,
-                width: '100%',
-                borderColor: COLORS.secondaryGray,
-                borderWidth: 1,
-                borderRadius: 4,
-                marginVertical: 6,
-                justifyContent: 'center',
-                paddingLeft: 8,
-              }}
-            >
-              <Text>{selectedStartDate}</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-
+        <Text style={{ ...FONTS.h3 }}>{name}</Text>
         <View
           style={{
-            flexDirection: 'column',
-            marginBottom: 6,
-          }}
-        >
-          <Text style={{ ...FONTS.h4 }}>Country</Text>
-          <View
-            style={{
-              height: 44,
-              width: '100%',
-              borderColor: COLORS.secondaryGray,
-              borderWidth: 1,
-              borderRadius: 4,
-              marginVertical: 6,
-              justifyContent: 'center',
-              paddingLeft: 8,
-            }}
-          >
-            <TextInput value={country} onChangeText={(value) => setCountry(value)} editable={true} />
-          </View>
-        </View>
-
-        <TouchableOpacity
-          onPress={handleSaveChange}
-          style={{
-            backgroundColor: COLORS.primary,
-            height: 44,
-            borderRadius: 6,
+            position: 'absolute',
+            right: 15,
+            flexDirection: 'row',
+            justifyContent: 'space-between',
             alignItems: 'center',
-            justifyContent: 'center',
           }}
         >
-          <Text
-            style={{
-              ...FONTS.body3,
-              color: COLORS.white,
-            }}
-          >
-            Save Change
-          </Text>
-        </TouchableOpacity>
-
-        <View style={{ marginTop: 40 }}>
-          <TouchableOpacity onPress={() => navigation.navigate('FriendsList')} style={{ width: 40 }}>
-            <FontAwesome5 name="user-friends" size={30} color={COLORS.black} />
+          <TouchableOpacity style={{ marginRight: 15 }} onPress={() => navigation.navigate('EditProfile')}>
+            <AntDesign name="edit" size={29} color={COLORS.black} />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate('FriendsList')}>
+            <MaterialIcons name="people-outline" size={35} color={COLORS.black} />
           </TouchableOpacity>
         </View>
-        {renderDatePicker()}
+      </View>
+      <ScrollView
+        style={{ flex: 1, paddingVertical: 10, paddingHorizontal: 20, backgroundColor: 'rgba(238, 238, 238, 0.8)' }}
+      >
+        <View
+          style={{
+            alignItems: 'center',
+            backgroundColor: COLORS.white,
+            width: '100%',
+            paddingTop: 100,
+            paddingBottom: 20,
+            paddingHorizontal: 20,
+            borderRadius: 20,
+            marginTop: 100,
+            position: 'relative',
+          }}
+        >
+          <View
+            style={{
+              position: 'absolute',
+              top: -95,
+              left: '26%',
+              borderRadius: '100%',
+              borderWidth: 8,
+              borderColor: 'rgba(238, 238, 238, 0.8)',
+            }}
+          >
+            <TouchableOpacity style={{}}>
+              {image ? (
+                <Image
+                  source={image}
+                  style={{
+                    height: 170,
+                    width: 170,
+                    borderRadius: 85,
+                  }}
+                />
+              ) : (
+                <Image
+                  source={selectedImage}
+                  style={{
+                    height: 170,
+                    width: 170,
+                    borderRadius: 85,
+                    borderWidth: 0,
+                    borderColor: 'none',
+                  }}
+                />
+              )}
+            </TouchableOpacity>
+          </View>
+          <Text
+            style={{
+              ...FONTS.h2,
+            }}
+          >
+            {name}
+          </Text>
+          <View
+            style={{
+              width: '100%',
+              marginTop: 20,
+              flex: 1,
+              gap: 5,
+            }}
+          >
+            <Text style={{ ...FONTS.h4 }}>
+              Email : <Text style={{ ...FONTS.body3 }}>{email}</Text>
+            </Text>
+            <Text style={{ ...FONTS.h4 }}>
+              Date of Birth : <Text style={{ ...FONTS.body3 }}>{selectedStartDate}</Text>
+            </Text>
+            <Text style={{ ...FONTS.h4 }}>
+              Country : <Text style={{ ...FONTS.body3 }}>{country}</Text>
+            </Text>
+          </View>
+        </View>
       </ScrollView>
     </SafeAreaView>
   )
 }
 
-export default EditProfile
+export default User
